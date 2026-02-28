@@ -1,0 +1,133 @@
+---
+title: Meeting summarization CLI
+description: 100% local meeting transcript summarization with LFM2-2.6B-Transcript and llama.cpp
+---
+
+This example is a 100% local meeting summarization tool that runs on your machine using [`LiquidAI/LFM2-2.6B-Transcript`](https://huggingface.co/LiquidAI/LFM2-2.6B-Transcript), a small language model specialized in summarizing meeting transcripts, powered by [`llama.cpp`](https://github.com/ggerganov/llama.cpp) for fast inference.
+
+<Frame>
+  <img src="https://raw.githubusercontent.com/Liquid4All/cookbook/main/examples/meeting-summarization/media/demo.gif" alt="Meeting summarization CLI demo" />
+</Frame>
+
+## What it does
+
+This tool provides a simple CLI to summarize meeting transcripts locally:
+
+- Processes meeting transcripts without sending data to any cloud service
+- Uses a specialized 2.6B parameter model optimized for meeting summaries
+- Streams tokens in real-time so you can see the summary being generated
+- Can be piped with an audio transcription model for a complete audio-to-summary pipeline
+
+## Prerequisites
+
+<Steps>
+  <Step title="Install uv">
+    If you don't have `uv` installed, follow the [installation instructions](https://docs.astral.sh/uv/getting-started/installation/).
+    
+    <Tabs>
+      <Tab title="macOS/Linux">
+        ```bash
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        ```
+      </Tab>
+      <Tab title="Windows">
+        ```powershell
+        powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+</Steps>
+
+## Quick start
+
+<Steps>
+  <Step title="Run with default transcript">
+    Run the tool without cloning the repository using a `uv run` one-liner:
+    
+    ```bash
+    uv run https://raw.githubusercontent.com/Liquid4All/cookbook/refs/heads/main/examples/meeting-summarization/summarize.py
+    ```
+    
+    This uses the [default example transcript](https://raw.githubusercontent.com/Liquid4All/cookbook/refs/heads/main/examples/meeting-summarization/transcripts/example_1.txt).
+  </Step>
+
+  <Step title="Use a custom transcript">
+    Pass a different transcript file using the `--transcript-file` argument (supports local files or HTTP/HTTPS URLs):
+    
+    ```bash
+    uv run https://raw.githubusercontent.com/Liquid4All/cookbook/refs/heads/main/examples/meeting-summarization/summarize.py \
+      --transcript-file https://raw.githubusercontent.com/Liquid4All/cookbook/refs/heads/main/examples/meeting-summarization/transcripts/example_2.txt
+    ```
+  </Step>
+
+  <Step title="Clone and customize (optional)">
+    For deeper experimentation and code modification:
+    
+    ```bash
+    git clone https://github.com/Liquid4All/cookbook.git
+    cd cookbook/examples/meeting-summarization
+    ```
+    
+    Run with custom parameters:
+    
+    ```bash
+    uv run summarize.py \
+      --model LiquidAI/LFM2-2.6B-Transcript-GGUF \
+      --hf-model-file LFM2-2.6B-Transcript-1-GGUF.gguf \
+      --transcript-file transcripts/example_1.txt
+    ```
+  </Step>
+</Steps>
+
+## How it works
+
+The CLI uses llama.cpp Python bindings to automatically download and build the llama.cpp binary optimized for your platform:
+
+```python
+model = Llama(
+    model_path="LiquidAI/LFM2-2.6B-Transcript-GGUF",
+    n_ctx=8192,
+    n_threads=4,
+    verbose=False,
+)
+```
+
+Tokens are streamed to the console in real-time:
+
+```python
+stream = model.create_chat_completion(
+    messages=[
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": transcript}
+    ],
+    max_tokens=2048,
+    temperature=0.0,
+    top_p=0.9,
+    stream=True,  # Enable streaming
+)
+
+for chunk in stream:
+    delta = chunk['choices'][0]['delta']
+    if 'content' in delta:
+        token = delta['content']
+        summary_text += token
+        console.print(token, end='', highlight=False)
+```
+
+<Note>
+  The llama.cpp binary is automatically built and optimized for your platform during the first run, so no manual setup is required.
+</Note>
+
+## Next steps
+
+Build a complete 2-step pipeline:
+
+1. Use an audio transcription model to convert meeting audio to text
+2. Pipe the transcript into this summarization tool
+
+This entire workflow can run on your machine without any cloud services or API keys.
+
+## Source code
+
+View the complete source code on [GitHub](https://github.com/Liquid4All/cookbook/tree/main/examples/meeting-summarization).

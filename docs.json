@@ -40,9 +40,12 @@
               "examples/localcowork",
               "examples/local-coding-assistant",
               "examples/meeting-intelligence-agent",
+              "examples/meeting-summarization",
               "examples/voice-chat",
               "examples/browser-control",
-              "examples/car-maker-identification"
+              "examples/car-maker-identification",
+              "examples/lfm2-english-to-korean",
+              "examples/leap-slogan-ios"
             ]
           },
           {

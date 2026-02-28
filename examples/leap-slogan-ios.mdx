@@ -1,0 +1,288 @@
+---
+title: Slogan generator iOS app
+description: Build an iOS app that generates creative slogans using local AI models with LeapSDK
+---
+
+A simple iOS app that generates creative slogans using local AI models, with no internet connection required. This example demonstrates how to integrate the LeapSDK into your iOS project and implement real-time streaming text generation.
+
+## What you'll learn
+
+By the end of this guide, you'll understand:
+
+- How to integrate the LeapSDK into your iOS project
+- How to load and run AI models locally on an iPhone or iPad
+- How to implement real-time streaming text generation
+- How to build a clean, three-layer SwiftUI architecture for AI apps
+
+## Understanding the architecture
+
+The LeapSlogan app has a clean, three-layer architecture:
+
+```
+┌─────────────────────────────────┐
+│      SwiftUI View Layer         │ ← User Interface
+│  (ContentView, UI Components)   │
+└────────────┬────────────────────┘
+             │
+┌────────────▼────────────────────┐
+│     ViewModel Layer             │ ← Business Logic
+│  (SloganViewModel, @Observable) │
+└────────────┬────────────────────┘
+             │
+┌────────────▼────────────────────┐
+│      LeapSDK Layer              │ ← AI Inference
+│  (ModelRunner, Conversation)    │
+└─────────────────────────────────┘
+```
+
+Here's what happens when a user generates a slogan:
+
+```
+1. User enters "coffee shop" and taps Generate
+   ↓
+2. UI disables input and shows "Generating..."
+   ↓
+3. ViewModel creates prompt with business type
+   ↓
+4. ChatMessage is sent to Conversation
+   ↓
+5. LeapSDK starts model inference
+   ↓
+6. Tokens stream back one-by-one
+   ├─ "Wake" → UI updates
+   ├─ " up" → UI updates
+   ├─ " to" → UI updates
+   ├─ " flavor" → UI updates
+   └─ "!" → UI updates
+   ↓
+7. .complete event fires
+   ↓
+8. UI re-enables input, shows final slogan
+```
+
+## Prerequisites
+
+You will need:
+
+- **Xcode 15.0+** with Swift 5.9 or later
+- **iOS 15.0+** deployment target
+- A **physical iOS device** (iPhone or iPad) for best performance
+  - The iOS Simulator works but will be significantly slower
+- Basic familiarity with **SwiftUI** and Swift's async/await syntax
+
+## Setup
+
+<Steps>
+  <Step title="Create a new Xcode project">
+    1. Open Xcode and create a new iOS App
+    2. Choose **SwiftUI** for the interface
+    3. Set minimum deployment target to **iOS 15.0**
+  </Step>
+
+  <Step title="Add LeapSDK via Swift Package Manager">
+    1. In Xcode, go to **File → Add Package Dependencies**
+    2. Enter the repository URL:
+       ```
+       https://github.com/Liquid4All/leap-ios.git
+       ```
+    3. Select the latest version (0.6.0 or newer)
+    4. Add **both** products to your target:
+       - ✅ `LeapSDK`
+       - ✅ `LeapSDKTypes`
+    
+    <Warning>
+      Starting with version 0.5.0, you must add both `LeapSDK` and `LeapSDKTypes` for proper runtime linking.
+    </Warning>
+  </Step>
+
+  <Step title="Download a model bundle">
+    1. Visit the [Leap Model Library](https://leap.liquid.ai/models)
+    2. Download a small model like **LFM2-350M** (great for mobile, ~500MB)
+    3. Download the `.bundle` file for your chosen model
+    4. Drag the `.bundle` file into your Xcode project
+    5. ✅ Make sure "Add to target" is checked
+    
+    Your project structure should look like:
+    ```
+    YourApp/
+    ├── YourApp.swift
+    ├── ContentView.swift
+    ├── Models/
+    │   └── LFM2-350M-8da4w_output_8da8w-seq_4096.bundle  ← Your model
+    └── Assets.xcassets
+    ```
+  </Step>
+</Steps>
+
+## Building the ViewModel
+
+The ViewModel manages the model lifecycle and handles generation. Create a new Swift file called `SloganViewModel.swift`:
+
+```swift
+import Foundation
+import SwiftUI
+import LeapSDK
+import Observation
+
+@Observable
+class SloganViewModel {
+    // MARK: - Published State
+    var isModelLoading = true
+    var isGenerating = false
+    var generatedSlogan = ""
+    var errorMessage: String?
+    
+    // MARK: - Private Properties
+    private var modelRunner: ModelRunner?
+    private var conversation: Conversation?
+    
+    // MARK: - Initialization
+    init() {
+        // Model will be loaded when view appears
+    }
+    
+    // MARK: - Model Management
+    @MainActor
+    func setupModel() async {
+        isModelLoading = true
+        errorMessage = nil
+        
+        do {
+            guard let modelURL = Bundle.main.url(
+                forResource: "qwen-0.6b",  // Change to match your bundle name
+                withExtension: "bundle"
+            ) else {
+                errorMessage = "Model bundle not found in app bundle"
+                isModelLoading = false
+                return
+            }
+            
+            modelRunner = try await Leap.load(url: modelURL)
+            conversation = Conversation(
+                modelRunner: modelRunner!,
+                history: []
+            )
+            
+            isModelLoading = false
+        } catch {
+            errorMessage = "Failed to load model: \(error.localizedDescription)"
+            isModelLoading = false
+        }
+    }
+    
+    // MARK: - Generation
+    @MainActor
+    func generateSlogan(for businessType: String) async {
+        guard let conversation = conversation,
+              !isGenerating else { return }
+        
+        isGenerating = true
+        generatedSlogan = ""
+        errorMessage = nil
+        
+        let prompt = """
+        Create a catchy, memorable slogan for a \(businessType) business. \
+        Make it creative, concise, and impactful. \
+        Return only the slogan, nothing else.
+        """
+        
+        let userMessage = ChatMessage(
+            role: .user,
+            content: [.text(prompt)]
+        )
+        
+        let stream = conversation.generateResponse(message: userMessage)
+        
+        do {
+            for await response in stream {
+                switch response {
+                case .chunk(let text):
+                    generatedSlogan += text
+                    
+                case .reasoningChunk(let reasoning):
+                    print("Reasoning: \(reasoning)")
+                    
+                case .complete(let usage, let completeInfo):
+                    print("✅ Generation complete!")
+                    print("Tokens used: \(usage.totalTokens)")
+                    isGenerating = false
+                }
+            }
+        } catch {
+            errorMessage = "Generation failed: \(error.localizedDescription)"
+            isGenerating = false
+        }
+    }
+}
+```
+
+### Understanding the streaming API
+
+The `generateResponse()` method returns an **AsyncStream** that emits three types of events:
+
+1. **`.chunk(text)`**: Each piece of generated text - makes the UI feel responsive
+2. **`.reasoningChunk(reasoning)`**: Some models show their "thinking" process
+3. **`.complete(usage, info)`**: Final event with token usage and performance metrics
+
+<Note>
+  Model loading is async and can take 1-5 seconds. In production apps, show a nice loading screen during this time.
+</Note>
+
+## Building the user interface
+
+The UI provides a beautiful, interactive experience. Key features:
+
+- **Progressive disclosure**: Loading screen → Main interface
+- **Clear visual feedback**: Loading states, disabled states, animations
+- **Helpful instructions**: Users understand what to do immediately
+- **Polished details**: Gradient background, shadows, rounded corners
+- **Copy functionality**: Users can easily copy the generated slogan
+
+View the [complete UI implementation](https://github.com/Liquid4All/LeapSDK-Examples/blob/main/iOS/LeapSloganExample/LeapSloganExample/ContentView.swift) on GitHub.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Model bundle not found">
+    **Solution**: 
+    - Check that `.bundle` file is in Xcode project
+    - Verify "Target Membership" is checked
+    - Ensure bundle name in code matches actual filename
+  </Accordion>
+
+  <Accordion title="Failed to load model">
+    **Solution**:
+    - Test on a physical device (Simulator is unreliable)
+    - Ensure iOS version is 15.0+
+    - Check device has enough free storage (~2-3x model size)
+    - Try a smaller model first
+  </Accordion>
+
+  <Accordion title="Slow generation speed">
+    **Solution**:
+    - Use a physical device (10-100x faster than Simulator)
+    - Choose a smaller model (350M-1B)
+    - Lower `maxTokens` in GenerationOptions
+    - Reduce temperature for faster but less creative output
+  </Accordion>
+
+  <Accordion title="App crashes on launch">
+    **Solution**:
+    - Ensure both `LeapSDK` and `LeapSDKTypes` are added
+    - Check frameworks are set to "Embed & Sign"
+    - Clean build folder (Cmd+Shift+K)
+    - Restart Xcode
+  </Accordion>
+</AccordionGroup>
+
+## Next steps
+
+Expand your skills with these projects:
+
+1. **LeapChat**: Build a full chat interface with history - check out the [LeapChatExample](https://github.com/Liquid4All/LeapSDK-Examples/tree/main/iOS/LeapChatExample)
+2. **Add structured output**: Use `@Generatable` macros to generate JSON data structures
+3. **Implement function calling**: Let AI call your functions for weather lookup, calculations, database queries - see the [Function Calling Guide](https://leap.liquid.ai/docs/edge-sdk/ios/function-calling)
+
+## Source code
+
+View the complete source code on [GitHub](https://github.com/Liquid4All/LeapSDK-Examples/tree/main/iOS/LeapSloganExample).
