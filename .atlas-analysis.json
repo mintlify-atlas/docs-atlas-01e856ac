@@ -1,0 +1,97 @@
+{
+  "projectType": "general",
+  "projectName": "LFM Cookbook",
+  "projectDescription": "Examples, tutorials, and applications for building with Liquid AI's LFM models on edge devices",
+  "theme": "palm",
+  "primaryColor": "#3B82F6",
+  "lightColor": "#60A5FA",
+  "darkColor": "#1E40AF",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": ["introduction", "getting-started"]
+          },
+          {
+            "group": "Local AI Apps",
+            "pages": [
+              "examples/invoice-parser",
+              "examples/audio-transcription-cli",
+              "examples/flight-search-assistant",
+              "examples/audio-car-cockpit",
+              "examples/audio-webgpu-demo",
+              "examples/vl-webgpu-demo",
+              "examples/localcowork",
+              "examples/local-coding-assistant",
+              "examples/meeting-intelligence-agent",
+              "examples/voice-chat",
+              "examples/browser-control",
+              "examples/car-maker-identification"
+            ]
+          },
+          {
+            "group": "Mobile Deployment",
+            "pages": [
+              "mobile/overview",
+              "mobile/android",
+              "mobile/ios"
+            ]
+          },
+          {
+            "group": "Fine-Tuning",
+            "pages": [
+              "fine-tuning/overview",
+              "fine-tuning/sft-with-unsloth",
+              "fine-tuning/sft-with-trl",
+              "fine-tuning/grpo-with-unsloth",
+              "fine-tuning/grpo-for-verifiable-tasks",
+              "fine-tuning/cpt-translation",
+              "fine-tuning/cpt-text-completion",
+              "fine-tuning/vlm-sft"
+            ]
+          },
+          {
+            "group": "Community",
+            "pages": [
+              "community/projects",
+              "community/contributing"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resources",
+        "groups": [
+          {
+            "group": "Learning",
+            "pages": [
+              "resources/technical-deep-dives",
+              "resources/deployment-options"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Local AI applications with no cloud dependencies",
+    "Mobile deployment on Android and iOS using LEAP SDK",
+    "Fine-tuning tutorials with SFT, GRPO, and CPT techniques",
+    "Vision and audio model examples",
+    "Real-time inference on edge devices",
+    "Tool calling and agentic workflows"
+  ],
+  "publicApiSurface": [
+    "Invoice Parser - Extract structured data from invoice images using LFM2-VL-3B",
+    "Audio Transcription CLI - Real-time audio-to-text using LFM2-Audio-1.5B",
+    "Flight Search Assistant - Tool calling with LFM2.5-1.2B-Thinking",
+    "Audio Car Cockpit - Voice-controlled demo with audio models",
+    "LocalCowork - On-device AI agent with 75 tools via MCP",
+    "SFT with Unsloth - Supervised fine-tuning with LoRA",
+    "GRPO with Unsloth - Reinforcement learning for reasoning models",
+    "VLM Fine-tuning - Vision-language model customization"
+  ]
+}
