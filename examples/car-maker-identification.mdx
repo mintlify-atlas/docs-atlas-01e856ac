@@ -1,0 +1,301 @@
+---
+title: Car maker identification
+description: Fine-tune LFM2-VL to identify car makers from images using LoRA
+---
+
+A step by step guide on fine-tuning a Vision Language Model for image identification tasks. The task we solve in this example is to identify the car maker from an image, but the learnings transfer to any other image classification task you might be interested in.
+
+<Frame>
+  <img src="https://raw.githubusercontent.com/Liquid4All/cookbook/main/examples/car-maker-identification/media/task.png" alt="Car maker identification task" />
+</Frame>
+
+## What you'll learn
+
+In this example, you will learn how to:
+
+- Build a model-agnostic **evaluation pipeline** for vision classification tasks
+- **Use structured output generation** with Outlines to ensure consistent and reliable model responses and increase model accuracy
+- **Fine-tune a Vision Language Model** with LoRA to further improve model accuracy
+
+## Quick start
+
+<Steps>
+  <Step title="Clone the repository">
+    ```bash
+    git clone https://github.com/Liquid4All/cookbook.git
+    cd cookbook/examples/car-maker-identification
+    ```
+  </Step>
+
+  <Step title="Evaluate base LFM2-VL models without structured generation">
+    <CodeGroup>
+      ```bash LFM2-VL-450M
+      make evaluate config=eval_lfm_450M_raw_generation.yaml
+      ```
+
+      ```bash LFM2-VL-1.6B
+      make evaluate config=eval_lfm_1.6B_raw_generation.yaml
+      ```
+
+      ```bash LFM2-VL-3B
+      make evaluate config=eval_lfm_3B_raw_generation.yaml
+      ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Evaluate base LFM2-VL models with structured generation">
+    <CodeGroup>
+      ```bash LFM2-VL-450M
+      make evaluate config=eval_lfm_450M_structured_generation.yaml
+      ```
+
+      ```bash LFM2-VL-1.6B
+      make evaluate config=eval_lfm_1.6B_structured_generation.yaml
+      ```
+
+      ```bash LFM2-VL-3B
+      make evaluate config=eval_lfm_3B_structured_generation.yaml
+      ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Fine-tune base LFM2-VL models with LoRA">
+    <CodeGroup>
+      ```bash LFM2-VL-450M
+      make fine-tune config=finetune_lfm_450M.yaml
+      ```
+
+      ```bash LFM2-VL-1.6B
+      make fine-tune config=finetune_lfm_1.6B.yaml
+      ```
+
+      ```bash LFM2-VL-3B
+      make fine-tune config=finetune_lfm_3B.yaml
+      ```
+    </CodeGroup>
+  </Step>
+</Steps>
+
+## Prerequisites
+
+You will need:
+
+- [uv](https://docs.astral.sh/uv/) to manage Python dependencies
+- [Modal](https://modal.com/) for GPU cloud compute
+- [Weights & Biases](https://wandb.ai/) (optional, but highly recommended) for experiment tracking
+- [make](https://www.gnu.org/software/make/) (optional) to simplify execution
+
+<AccordionGroup>
+  <Accordion title="Install uv">
+    <Tabs>
+      <Tab title="macOS/Linux">
+        ```bash
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        ```
+      </Tab>
+      <Tab title="Windows">
+        ```powershell
+        powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+        ```
+      </Tab>
+    </Tabs>
+  </Accordion>
+
+  <Accordion title="Modal setup">
+    1. Create an account at [modal.com](https://modal.com/)
+    2. Install the Modal Python package:
+       ```bash
+       uv add modal
+       ```
+    3. Authenticate with Modal:
+       ```bash
+       uv run modal setup
+       ```
+       If the first command fails, try:
+       ```bash
+       uv run python -m modal setup
+       ```
+  </Accordion>
+
+  <Accordion title="Weights & Biases setup">
+    1. Create an account at [wandb.ai](https://wandb.ai/)
+    2. Install the Weights & Biases Python package:
+       ```bash
+       uv add wandb
+       ```
+    3. Authenticate with Weights & Biases:
+       ```bash
+       uv run wandb login
+       ```
+       This will open a browser window where you can copy your API key and paste it in the terminal.
+  </Accordion>
+</AccordionGroup>
+
+Once you have installed these tools, create the virtual environment:
+
+```bash
+git clone https://github.com/Liquid4All/cookbook.git
+cd cookbook/examples/car-maker-identification
+uv sync
+```
+
+## Steps to fine-tune LFM2-VL for this task
+
+Here's the systematic approach we follow to fine-tune LFM2-VL models for car maker identification:
+
+1. **Prepare the dataset**. Collect an accurate and diverse dataset of (image, car_maker) pairs that represents the entire distribution of inputs the model will be exposed to once deployed.
+2. **Establish baseline performance**. Evaluate pre-trained models of different sizes (450M, 1.6B, 3B) to understand current capabilities.
+3. **Fine-tune with LoRA**. Apply parameter-efficient fine-tuning using Low-Rank Adaptation to improve model accuracy.
+4. **Evaluate improvements**. Compare fine-tuned model performance against baselines to measure effectiveness.
+
+## Step 1: Dataset preparation
+
+Dataset creation is one of the most critical parts of the whole project.
+
+<Note>
+  A fine-tuned Language Model is as **good** as the dataset used to fine-tune it.
+</Note>
+
+<Tip>
+  **What does good mean in this case?**
+  
+  A good dataset for image classification needs to be:
+  
+  - **Accurate**: Labels must correctly match the images. For car maker identification, this means each car image is labeled with the correct manufacturer. Mislabeled data will teach the model incorrect associations.
+  
+  - **Diverse**: The dataset should represent the full range of conditions the model will encounter in production. This includes:
+    - Different car models from each manufacturer
+    - Various angles, lighting conditions, and backgrounds
+    - Different image qualities and resolutions
+    - Cars from different years and in different conditions
+</Tip>
+
+In this guide we use the [Stanford Cars dataset](https://huggingface.co/datasets/Paulescu/stanford_cars) hosted on Hugging Face.
+
+The dataset contains:
+- **Classes**: 49 unique car manufacturers
+- **Splits**: Train (6,860 images) and test (6,750 images) splits
+
+## Step 2: Baseline performance of LFM2-VL models
+
+Before embarking into any fine-tuning experiment, we need to establish a baseline performance for existing models. We evaluate:
+
+- LFM2-VL-450M
+- LFM2-VL-1.6B
+- LFM2-VL-3B
+
+Run the evaluation for the 3 models:
+
+```bash
+make evaluate config=eval_lfm_450M_raw_generation.yaml
+make evaluate config=eval_lfm_1.6B_raw_generation.yaml
+make evaluate config=eval_lfm_3B_raw_generation.yaml
+```
+
+### Results
+
+| Model | Accuracy |
+|-------|----------|
+| LFM2-VL-450M | 3% |
+| LFM2-VL-1.6B | 0% |
+| LFM2-VL-3B | 66% |
+
+However, before blaming it on the model, let's dig deeper. If you look at the confusion matrix, you'll see that even though the 3B model works reasonably well overall, it sometimes generates output that does not correspond to any car maker name.
+
+<Frame>
+  <img src="https://raw.githubusercontent.com/Liquid4All/cookbook/main/examples/car-maker-identification/media/confusion_matrix_lfm2_3b_raw_generation.png" alt="Confusion matrix for LFM2-VL-3B raw generation" />
+</Frame>
+
+This is what we'll address in the next step.
+
+## Step 3: Structured generation to increase model robustness
+
+Structured generation is a technique that allows us to "force" the Language Model to output a specific format, like JSON, or in our case, a valid entry from a list of car makers.
+
+<Note>
+  Language Models generate text by sampling one token at a time. At each step of the decoding process, the model generates a probability distribution over the next token and samples one token from it.
+  
+  Structured generation techniques "intervene" at each step of the decoding process, by masking tokens that are not compatible with the structured output we want to generate.
+</Note>
+
+<Frame>
+  <img src="https://raw.githubusercontent.com/Liquid4All/cookbook/main/examples/car-maker-identification/media/structured_generation.webp" alt="Structured generation diagram" />
+</Frame>
+
+For structured generation in Python apps we recommend the [Outlines](https://github.com/dottxt-ai/outlines) library.
+
+Re-run the evaluations using structured generation:
+
+```bash
+make evaluate config=eval_lfm_450M_structured_generation.yaml
+make evaluate config=eval_lfm_1.6B_structured_generation.yaml
+make evaluate config=eval_lfm_3B_structured_generation.yaml
+```
+
+### Results
+
+| Model | Accuracy |
+|-------|----------|
+| LFM2-VL-450M | 58% |
+| LFM2-VL-1.6B | 74% |
+| LFM2-VL-3B | 81% |
+
+The model now only outputs valid car maker names!
+
+<Frame>
+  <img src="https://raw.githubusercontent.com/Liquid4All/cookbook/main/examples/car-maker-identification/media/confusion_matrix_lfm2_3b_structured_generation.png" alt="Confusion matrix for LFM2-VL-3B structured generation" />
+</Frame>
+
+At this point you need to decide if the performance is good enough for your use case. If not, it's time to fine-tune the model.
+
+## Step 4: Fine-tuning with LoRA
+
+To fine-tune the model, we use the LoRA technique. LoRA is a parameter-efficient fine-tuning technique that allows us to fine-tune by adding and tuning a small number of parameters.
+
+<Frame>
+  <img src="https://raw.githubusercontent.com/Liquid4All/cookbook/main/examples/car-maker-identification/media/lora.webp" alt="LoRA diagram" />
+</Frame>
+
+You can fine-tune each of the 3 LFM2-VL models with LoRA:
+
+```bash
+make fine-tune config=finetune_lfm_450M.yaml
+make fine-tune config=finetune_lfm_1.6B.yaml
+make fine-tune config=finetune_lfm_3B.yaml
+```
+
+The train loss curves for the 3 models stabilize around very different loss values, where the LFM2-VL-3B model has the lowest loss and the LFM2-VL-450M model has the highest loss.
+
+<Frame>
+  <img src="https://raw.githubusercontent.com/Liquid4All/cookbook/main/examples/car-maker-identification/media/train_loss.png" alt="Training loss curves" />
+</Frame>
+
+### Evaluate the fine-tuned model on the test set
+
+To evaluate the fine-tuned model:
+
+```bash
+make evaluate config=eval_lfm_3B_checkpoint_1000.yaml
+```
+
+### Results
+
+| Checkpoint | Accuracy |
+|------------|----------|
+| Base Model (LFM2-VL-3B) | 81% |
+| checkpoint-1000 | 82% |
+
+<Frame>
+  <img src="https://raw.githubusercontent.com/Liquid4All/cookbook/main/examples/car-maker-identification/media/confusion_matrix_lfm2_3b_checkpoint_1000.png" alt="Confusion matrix for fine-tuned model" />
+</Frame>
+
+## What's next?
+
+To improve the dataset quality you can:
+
+- Increase quality by filtering out heavily cropped, occluded, or low-quality images where the brand isn't clearly identifiable
+- Increase diversity by doing data augmentation on the least represented classes
+
+## Source code
+
+View the complete source code on [GitHub](https://github.com/Liquid4All/cookbook/tree/main/examples/car-maker-identification).

@@ -1,0 +1,169 @@
+---
+title: Vision WebGPU demo
+description: Real-time video captioning with LFM2.5-VL-1.6B running entirely in your browser
+---
+
+This example showcases how to run a local vision language model in the browser using the LFM2.5-VL-1.6B model and the ONNX runtime with WebGPU for GPU acceleration.
+
+You can find all the code [in this Hugging Face Space](https://huggingface.co/spaces/LiquidAI/LFM2.5-VL-1.6B-WebGPU/tree/main), including a deployed version you can interact with [0 setup here](https://huggingface.co/spaces/LiquidAI/LFM2.5-VL-1.6B-WebGPU).
+
+<Note>
+  This is a WebGPU-based vision-language model demo, so make sure you're using a browser that supports WebGPU (like Chrome or Edge).
+</Note>
+
+## The traditional approach: Cloud-based inference
+
+Typically, vision-language model inference follows a server-client architecture. Your application sends images and prompts to a cloud-hosted frontier model (like Claude, GPT-4V, or Gemini), which processes the request on powerful servers and returns the results:
+
+<Frame>
+  <img src="https://raw.githubusercontent.com/Liquid4All/cookbook/main/examples/vl-webgpu-demo/media/remote-inference.gif" alt="Remote inference example" />
+</Frame>
+
+While this approach works well for many use cases, it comes with several limitations:
+
+- **Privacy concerns**: Images and data must be sent to external servers
+- **Latency**: Network round-trips add delays, especially for real-time applications
+- **Cost**: API calls accumulate charges based on usage
+- **Connectivity dependency**: Requires stable internet connection
+- **Rate limits**: Subject to API quotas and throttling
+
+## The local alternative: In-browser inference with WebGPU
+
+This demo showcases a different approach: running a vision-language model entirely in your browser using WebGPU for GPU acceleration. The LFM2.5-VL-1.6B model (1.6 billion parameters, quantized) runs directly on your device without sending data anywhere.
+
+<Frame>
+  <img src="https://raw.githubusercontent.com/Liquid4All/cookbook/main/examples/vl-webgpu-demo/media/local-inference.gif" alt="Local inference example" />
+</Frame>
+
+### Key advantages
+
+- **Complete privacy**: All data stays on your device
+- **Low latency**: No network overhead, ideal for real-time video processing
+- **Zero inference cost**: No API charges after initial model download
+- **Offline capability**: Works without internet connection (after model caching)
+- **No rate limits**: Process as many frames as your hardware can handle
+
+## How to run the app locally
+
+<Steps>
+  <Step title="Clone the repository">
+    ```bash
+    git clone https://huggingface.co/spaces/LiquidAI/LFM2.5-VL-1.6B-WebGPU/
+    cd LFM2.5-VL-1.6B-WebGPU
+    ```
+  </Step>
+
+  <Step title="Verify npm is installed">
+    ```bash
+    npm --version
+    ```
+    
+    If you don't have npm, [install Node.js and npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm).
+  </Step>
+
+  <Step title="Install dependencies">
+    ```bash
+    npm install
+    ```
+  </Step>
+
+  <Step title="Start the development server">
+    ```bash
+    npm run dev
+    ```
+    
+    The dev server will start and provide you with a local URL (typically `http://localhost:5173`) where you can access the app in your browser.
+  </Step>
+</Steps>
+
+### Optional: Run with Docker locally
+
+If you prefer to test the production build locally using Docker:
+
+```bash
+# Build the Docker image
+docker build -t lfm-vl-webgpu -f LFM2.5-VL-1.6B-WebGPU/Dockerfile .
+
+# Run the container
+docker run -p 7860:7860 lfm-vl-webgpu
+```
+
+Then access the app at `http://localhost:7860` in your browser.
+
+## How to deploy the app to production
+
+After running `npm run build`, you'll have a production-ready bundle in the `dist/` directory.
+
+<Frame>
+  <img src="https://raw.githubusercontent.com/Liquid4All/cookbook/main/examples/vl-webgpu-demo/media/vite.jpg" alt="Vite build" />
+</Frame>
+
+This static website can be deployed to any static hosting service, such as:
+
+- **HuggingFace Space** (for demo purposes only). It automatically uses the Dockerfile at the root of the directory. You can see it in action [here](https://huggingface.co/spaces/LiquidAI/LFM2.5-VL-1.6B-WebGPU).
+- **Platform as a Service (PaaS)**: Vercel, Netlify
+- **Cloud storage + CDN**: AWS S3 + CloudFront, GCS + Cloud CDN, Azure Blob + CDN
+- **Traditional web servers**: nginx, Apache, Caddy
+
+<Warning>
+  This app requires specific CORS headers to enable WebGPU and SharedArrayBuffer. GitHub Pages, for example, does not support them, so it is not an option to host this app.
+</Warning>
+
+## How the code is organized
+
+**Vite's role**: Vite is the build tool that bundles all JavaScript files and dependencies into optimized browser-ready code. During development (`npm run dev`), it serves files with hot-reload. For production (`npm run build`), it creates a minified bundle in the `dist/` directory.
+
+**Code organization**: The application follows a modular architecture with separation of concerns:
+
+- **Entry point** (`index.html` → `main.js`): Initializes the app, sets up event listeners, coordinates between modules
+- **Configuration** (`config.js`): Model definitions, HuggingFace URLs, quantization options
+- **Inference pipeline** (`infer.js` → `webgpu-inference.js` → `vl-model.js`):
+  - Routes inference requests
+  - Manages model lifecycle and state
+  - Handles ONNX Runtime sessions and token generation
+- **Image processing** (`vl-processor.js`): Preprocesses webcam frames into model-ready patches and tensors
+- **UI layer** (`ui.js`): Updates DOM elements, displays progress, shows captions
+
+Each JavaScript file is an ES module that exports/imports functions, keeping code organized and maintainable. Vite handles module resolution and bundling automatically.
+
+## Frequently asked questions for non-Node.js developers
+
+<AccordionGroup>
+  <Accordion title="What does npm run do?">
+    `npm run` executes custom scripts defined in the `package.json` file.
+    
+    In `package.json`, you define scripts in the "scripts" section:
+    
+    ```json
+    {
+       "name": "lfm25-vl-webgpu",
+       "scripts": {
+          "dev": "vite",
+          "build": "vite build",
+          "preview": "vite preview"
+       }
+    }
+    ```
+    
+    Then you run them with:
+    - `npm run dev` - Runs "vite"
+    - `npm run build` - Runs "vite build"
+    - `npm run preview` - Runs "vite preview"
+    
+    So `npm run` is essentially npm's task runner, letting you define and execute project-specific commands.
+  </Accordion>
+
+  <Accordion title="What is Vite?">
+    Vite is a modern build tool that serves two purposes:
+    
+    1. **Development Server** (`npm run dev`): Serves your application locally with instant hot-reload when you edit code. Think of it like Flask's `debug=True` mode or Django's `runserver` - but optimized for JavaScript modules and incredibly fast.
+    
+    2. **Production Bundler** (`npm run build`): Transforms and optimizes your source code (`.js`, `.css`, assets) into production-ready bundles that are minified, optimized, and efficient for browsers to load.
+    
+    **Python analogy**: Vite combines `uvicorn --reload` (fast dev server) with `setuptools` (build/packaging tool) into one lightning-fast tool specifically designed for modern web development.
+  </Accordion>
+</AccordionGroup>
+
+## Source code
+
+View the complete source code on [Hugging Face](https://huggingface.co/spaces/LiquidAI/LFM2.5-VL-1.6B-WebGPU/tree/main).

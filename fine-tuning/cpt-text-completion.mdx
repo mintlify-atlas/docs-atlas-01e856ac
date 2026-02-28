@@ -1,0 +1,227 @@
+---
+title: Continued pre-training for text completion
+description: Train models for creative text generation using continued pre-training with Unsloth
+---
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Liquid4All/cookbook/blob/main/finetuning/notebooks/cpt_text_completion_with_unsloth.ipynb)
+
+This tutorial shows you how to use Continued Pre-training (CPT) with Unsloth to adapt a language model for text completion and generation tasks. We'll use the [LFM2.5-1.2B-Base](https://docs.liquid.ai/docs/models/lfm25-1.2b-base) model and perform continued pre-training on the Tiny Stories dataset.
+
+## What you'll learn
+
+By the end of this tutorial, you'll know how to:
+- Prepare raw text data for continued pre-training
+- Train models on creative text generation datasets
+- Adapt models to specific writing styles and patterns
+- Generate creative text completions
+- Export models for deployment
+
+## Prerequisites
+
+- **GPU**: This tutorial requires a GPU. You can run it for free on [Google Colab](https://colab.research.google.com/github/Liquid4All/cookbook/blob/main/finetuning/notebooks/cpt_text_completion_with_unsloth.ipynb) using an NVIDIA T4 GPU
+- **Python**: Python 3.8 or higher
+- **Basic knowledge**: Familiarity with language modeling concepts
+
+## What is text completion training?
+
+Text completion training teaches models to:
+- Continue partial text in a coherent way
+- Match specific writing styles and patterns
+- Generate creative content (stories, dialogue, etc.)
+- Maintain consistency across longer generations
+
+This differs from instruction tuning because:
+- No instruction-response format needed
+- Trains on raw, continuous text
+- Optimizes for natural text continuation
+- Focuses on style and creativity
+
+## When to use CPT for text completion
+
+Use this approach when you want to:
+
+### Creative writing
+- Novel and story generation
+- Dialogue and screenplay writing
+- Poetry and creative content
+
+### Style adaptation
+- Mimic specific author styles
+- Match brand voice and tone
+- Adapt to genre conventions
+
+### Domain text generation
+- Technical documentation
+- Legal or medical text
+- Code documentation and comments
+
+**Don't use this for**:
+- Question answering (use instruction tuning)
+- Task-specific outputs (use SFT)
+- Structured generation (use specialized fine-tuning)
+
+## Tutorial overview
+
+The tutorial covers the following steps:
+
+1. **Installation**: Set up Unsloth and dependencies
+2. **Data preparation**: Load and format the Tiny Stories dataset
+3. **Model setup**: Configure LFM2.5-1.2B-Base for CPT
+4. **Training configuration**: Set up for text completion training
+5. **Training**: Run continued pre-training
+6. **Generation**: Test creative text completion
+7. **Export**: Save your model for deployment
+
+## Key concepts
+
+### The Tiny Stories dataset
+
+Tiny Stories is a dataset of short, simple stories designed for language models:
+```
+Once upon a time, there was a little car named Beep. 
+Beep loved to go fast and play in the sun. Beep was 
+a healthy car because he always had good fuel...
+```
+
+Perfect for learning:
+- Narrative structure
+- Story progression
+- Character consistency
+- Creative language patterns
+
+### Single-column format
+
+Unlike instruction datasets with question-answer pairs, CPT uses only:
+- **text** column: Contains the raw text for completion
+
+No need for:
+- Instruction formatting
+- System prompts
+- Response templates
+
+### Important: CCE disabling
+
+For CPT, you must disable Cut Cross-Entropy (CCE):
+```python
+%env UNSLOTH_RETURN_LOGITS=1
+```
+
+This is required because:
+- CPT uses raw text completion
+- CCE is optimized for instruction tuning
+- Without disabling, training will fail
+
+### Base model selection
+
+This tutorial uses **LFM2.5-1.2B-Base** instead of an instruct model:
+- Base models are better for CPT
+- Avoid catastrophic forgetting of instruction abilities
+- More flexible for style adaptation
+- Better starting point for creative tasks
+
+## Training configuration
+
+Key differences from instruction fine-tuning:
+
+**Data format**:
+- No chat templates
+- No instruction wrapping
+- Plain text completion
+
+**Loss computation**:
+- Compute loss on entire sequence
+- No special token handling
+- Simple next-token prediction
+
+**Hyperparameters**:
+- Similar learning rates as SFT
+- Longer context windows for narrative
+- Larger batch sizes for stability
+
+## Generation strategies
+
+After training, you can use various generation strategies:
+
+### Greedy decoding
+- Deterministic, always picks most likely token
+- Good for consistent outputs
+
+### Sampling
+- Introduces randomness for creativity
+- Adjust temperature for control
+
+### Top-k / Top-p sampling
+- Balance between quality and diversity
+- Recommended for creative text
+
+## Deployment options
+
+After training, you can deploy your model to:
+
+- **Mobile**: Android and iOS apps using the LEAP SDK
+- **Desktop**: Mac (MLX), Windows/Linux (llama.cpp, Ollama, LM Studio)
+- **Cloud**: vLLM, Modal, Baseten, Fal for production deployments
+- **Edge**: On-device inference for low-latency applications
+
+See the [deployment documentation](https://docs.liquid.ai/docs/inference/overview) for detailed guides.
+
+## Run the tutorial
+
+You can run this tutorial in two ways:
+
+1. **Google Colab** (recommended): Click the "Open in Colab" badge at the top
+2. **Local environment**: Clone the [LFM Cookbook repository](https://github.com/Liquid4All/cookbook) and run the notebook locally
+
+### Access the notebook
+
+The complete notebook is available at:
+- **GitHub**: [cpt_text_completion_with_unsloth.ipynb](https://github.com/Liquid4All/cookbook/blob/main/finetuning/notebooks/cpt_text_completion_with_unsloth.ipynb)
+- **Colab**: Click the badge above to open directly in Google Colab
+
+## Adapting to your dataset
+
+To use your own text corpus:
+
+1. **Prepare data**: Collect raw text in a single column format
+2. **Clean text**: Remove unwanted formatting and artifacts
+3. **Chunk appropriately**: Split long documents into training chunks
+4. **Adjust context length**: Set max_seq_length based on your text
+5. **Monitor generation**: Check outputs during training
+
+## Use cases
+
+Examples of what you can build:
+
+### Story generator
+- Train on story collections
+- Generate new stories in similar style
+- Continue partial story prompts
+
+### Dialogue system
+- Train on screenplay or dialogue data
+- Generate natural conversations
+- Maintain character voices
+
+### Code documentation
+- Train on well-documented codebases
+- Generate code comments
+- Write technical documentation
+
+### Brand content
+- Train on brand materials
+- Maintain consistent voice
+- Generate marketing content
+
+## Next steps
+
+After completing this tutorial, you can:
+- Try [CPT for translation](/fine-tuning/cpt-translation) for language adaptation
+- Apply CPT to your own text corpus
+- Experiment with different generation strategies
+- Deploy your model using the [inference guides](https://docs.liquid.ai/docs/inference/overview)
+
+## Getting help
+
+Need assistance? Join the Liquid AI Discord Community:
+
+<a href="https://discord.com/invite/liquid-ai"><img src="https://img.shields.io/discord/1385439864920739850?color=7289da&label=Join%20Discord&logo=discord&logoColor=white" alt="Join Discord" /></a>

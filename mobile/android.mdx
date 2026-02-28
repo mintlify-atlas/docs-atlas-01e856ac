@@ -1,0 +1,99 @@
+---
+title: Android deployment
+description: Deploy LFM models on Android devices with the LEAP Edge SDK
+---
+
+The LEAP Edge SDK provides native Kotlin integration for deploying LFM2 models on Android devices. The SDK handles model loading, inference, and streaming responses, making it straightforward to add on-device AI capabilities to your Android applications.
+
+## Android examples
+
+The following examples demonstrate different use cases and capabilities of the LEAP SDK on Android:
+
+<CardGroup cols={2}>
+  <Card title="LeapChat" icon="comments" href="https://github.com/Liquid4All/LeapSDK-Examples/tree/main/Android/LeapChat">
+    Full-featured chat app with real-time streaming, persistent conversation history, and modern Android UI
+  </Card>
+  <Card title="LeapAudioDemo" icon="microphone" href="https://github.com/Liquid4All/LeapSDK-Examples/tree/main/Android/LeapAudioDemo">
+    Audio input and output processing with LFM2.5-Audio-1.5B for voice-enabled AI features
+  </Card>
+  <Card title="LeapKoogAgent" icon="robot" href="https://github.com/Liquid4All/LeapSDK-Examples/tree/main/Android/LeapKoogAgent">
+    Integration with the Koog framework for building AI agents with tool calling capabilities
+  </Card>
+  <Card title="SloganApp" icon="bullhorn" href="https://github.com/Liquid4All/LeapSDK-Examples/tree/main/Android/SloganApp">
+    Single-turn marketing slogan generation demonstrating Android Views integration
+  </Card>
+  <Card title="ShareAI" icon="share-nodes" href="https://github.com/Liquid4All/LeapSDK-Examples/tree/main/Android/ShareAI">
+    Website summary generator that processes shared URLs
+  </Card>
+  <Card title="Recipe Generator" icon="utensils" href="https://github.com/Liquid4All/LeapSDK-Examples/tree/main/Android/RecipeGenerator">
+    Structured output generation demonstrating JSON schema validation with the LEAP SDK
+  </Card>
+  <Card title="VLM Example" icon="eye" href="https://github.com/Liquid4All/LeapSDK-Examples/tree/main/Android/VLMExample">
+    Visual Language Model integration for image understanding and generation
+  </Card>
+</CardGroup>
+
+## Example overview
+
+| Example | Description | Key Features |
+|---------|-------------|-------------|
+| **LeapChat** | Chat interface with streaming | Real-time streaming, conversation history, modern UI |
+| **LeapAudioDemo** | Audio processing | Speech input/output with LFM2.5-Audio-1.5B |
+| **LeapKoogAgent** | AI agent framework | Koog integration, tool calling, agent workflows |
+| **SloganApp** | Text generation | Single-turn generation, Android Views |
+| **ShareAI** | Website summarization | URL processing, content extraction |
+| **RecipeGenerator** | Structured output | JSON schema, formatted responses |
+| **VLMExample** | Vision model | Image understanding, VLM integration |
+
+## Getting started
+
+All Android examples are available in the [LeapSDK-Examples repository](https://github.com/Liquid4All/LeapSDK-Examples). Each example includes:
+
+- Complete source code with Kotlin implementation
+- Gradle build configuration
+- README with setup instructions
+- Sample prompts and usage examples
+
+### Installation
+
+1. Clone the LeapSDK-Examples repository:
+   ```bash
+   git clone https://github.com/Liquid4All/LeapSDK-Examples.git
+   cd LeapSDK-Examples/Android
+   ```
+
+2. Open the example project in Android Studio
+
+3. Follow the example-specific README for model setup and configuration
+
+### Basic integration
+
+The LEAP SDK makes it easy to integrate LFM models into your Android app. Here's a basic example:
+
+```kotlin
+import ai.liquid.leap.LeapSDK
+
+val sdk = LeapSDK.getInstance(context)
+sdk.loadModel("lfm2-1.2b-instruct")
+
+sdk.generateStream("Tell me a story") { token ->
+    // Handle streaming tokens
+    runOnUiThread {
+        textView.append(token)
+    }
+}
+```
+
+## Resources
+
+- [LeapSDK-Examples Repository](https://github.com/Liquid4All/LeapSDK-Examples) - Complete source code for all examples
+- [LEAP Edge SDK Documentation](https://leap.liquid.ai/docs/edge-sdk/overview) - API reference and integration guides
+- [Liquid AI Documentation](https://docs.liquid.ai/) - Main documentation hub
+- [Discord Community](https://discord.com/invite/liquid-ai) - Get help and share your projects
+
+## Next steps
+
+- Explore the [LeapChat example](https://github.com/Liquid4All/LeapSDK-Examples/tree/main/Android/LeapChat) for a complete chat implementation
+- Try the [Recipe Generator](https://github.com/Liquid4All/LeapSDK-Examples/tree/main/Android/RecipeGenerator) to learn about structured output
+- Check out the [LeapAudioDemo](https://github.com/Liquid4All/LeapSDK-Examples/tree/main/Android/LeapAudioDemo) for audio processing capabilities
+- Review the [LEAP SDK documentation](https://leap.liquid.ai/docs/edge-sdk/overview) for detailed API information

@@ -1,0 +1,175 @@
+---
+title: GRPO for verifiable tasks
+description: Apply Group Relative Policy Optimization to tasks with programmatic verification
+---
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Liquid4All/cookbook/blob/main/finetuning/notebooks/grpo_for_verifiable_tasks.ipynb)
+
+This tutorial shows you how to fine-tune language models for verifiable tasks using Group Relative Policy Optimization (GRPO). Learn how to apply reinforcement learning to tasks where outputs can be programmatically verified for correctness.
+
+## What you'll learn
+
+By the end of this tutorial, you'll know how to:
+- Identify tasks suitable for GRPO training
+- Design verification functions for different task types
+- Set up TRL for GRPO training
+- Configure training parameters for optimal results
+- Evaluate model performance on verifiable tasks
+- Export and deploy your fine-tuned model
+
+## Prerequisites
+
+- **GPU**: This tutorial requires a GPU with at least 16GB memory. You can run it for free on [Google Colab](https://colab.research.google.com/github/Liquid4All/cookbook/blob/main/finetuning/notebooks/grpo_for_verifiable_tasks.ipynb) using an NVIDIA T4 GPU
+- **Python**: Python 3.8 or higher
+- **Basic knowledge**: Understanding of reinforcement learning concepts is helpful
+
+## What are verifiable tasks?
+
+Verifiable tasks are problems where you can programmatically check if an output is correct. Examples include:
+
+### Mathematical problem solving
+- Extract the final numeric answer
+- Compare with ground truth
+- Binary verification (correct/incorrect)
+
+```python
+def verify_math(output, expected):
+    answer = extract_number(output)
+    return answer == expected
+```
+
+### Code generation
+- Run unit tests against generated code
+- Check for compilation errors
+- Verify output matches expected results
+
+```python
+def verify_code(code, test_cases):
+    result = run_tests(code, test_cases)
+    return result.all_passed
+```
+
+### Structured output tasks
+- Validate JSON against schema
+- Check SQL syntax and semantics
+- Verify XML/HTML structure
+
+```python
+def verify_json(output, schema):
+    try:
+        data = json.loads(output)
+        jsonschema.validate(data, schema)
+        return True
+    except:
+        return False
+```
+
+### Question answering
+- Compare with ground truth answers
+- Check for exact match or semantic similarity
+- Verify factual correctness
+
+## Why use GRPO for these tasks?
+
+GRPO offers several advantages for verifiable tasks:
+
+- **Direct optimization**: Optimizes directly for task success, not just likelihood
+- **Sample efficiency**: Learns from both successes and failures
+- **Better generalization**: Encourages diverse solution strategies
+- **Reduced overfitting**: Focuses on correctness rather than memorization
+
+## Tutorial overview
+
+The tutorial covers the following steps:
+
+1. **Installation**: Set up TRL, PEFT, and required libraries
+2. **Task selection**: Choose a verifiable task (mathematical reasoning)
+3. **Data preparation**: Format data with verification labels
+4. **Verification function**: Implement programmatic checking
+5. **Training setup**: Configure GRPO with TRL
+6. **Training**: Run reinforcement learning training
+7. **Evaluation**: Test on held-out verification set
+8. **Export**: Save your model for deployment
+
+## Key concepts
+
+### GRPO algorithm
+
+GRPO works by:
+1. Generating multiple candidate outputs
+2. Evaluating each with the verification function
+3. Computing rewards based on correctness
+4. Updating the policy to increase reward
+
+### Reward design principles
+
+Good verification functions should be:
+- **Deterministic**: Same input always gives same result
+- **Fast**: Executes quickly for training efficiency
+- **Accurate**: Correctly identifies success and failure
+- **Unbiased**: Doesn't favor specific solution patterns
+
+### Training configuration
+
+Key hyperparameters for GRPO:
+- **Number of generations**: How many outputs to generate per prompt (typically 4-8)
+- **Learning rate**: Lower than SFT (typically 1e-6 to 1e-5)
+- **Batch size**: Smaller due to multiple generations
+- **Reward scaling**: Normalize rewards for stable training
+
+## Libraries used
+
+The tutorial uses:
+- **TRL**: Hugging Face library for reinforcement learning
+- **PEFT**: Parameter-efficient fine-tuning with LoRA
+- **bitsandbytes**: Quantization for memory efficiency
+- **liger-kernel**: Optimized training kernels
+- **trackio**: Experiment tracking (optional)
+
+## Deployment options
+
+After fine-tuning, you can deploy your model to:
+
+- **Mobile**: Android and iOS apps using the LEAP SDK
+- **Desktop**: Mac (MLX), Windows/Linux (llama.cpp, Ollama, LM Studio)
+- **Cloud**: vLLM, Modal, Baseten, Fal for production deployments
+- **Edge**: On-device inference for low-latency applications
+
+See the [deployment documentation](https://docs.liquid.ai/docs/inference/overview) for detailed guides.
+
+## Run the tutorial
+
+You can run this tutorial in two ways:
+
+1. **Google Colab** (recommended): Click the "Open in Colab" badge at the top
+2. **Local environment**: Clone the [LFM Cookbook repository](https://github.com/Liquid4All/cookbook) and run the notebook locally
+
+### Access the notebook
+
+The complete notebook is available at:
+- **GitHub**: [grpo_for_verifiable_tasks.ipynb](https://github.com/Liquid4All/cookbook/blob/main/finetuning/notebooks/grpo_for_verifiable_tasks.ipynb)
+- **Colab**: Click the badge above to open directly in Google Colab
+
+## Adapting to your task
+
+To apply GRPO to your own verifiable task:
+
+1. **Define verification**: Write a function that checks correctness
+2. **Prepare data**: Include verification labels in your dataset
+3. **Adjust rewards**: Scale rewards appropriately for your task
+4. **Tune hyperparameters**: Experiment with generation count and learning rate
+5. **Evaluate thoroughly**: Test on diverse examples
+
+## Next steps
+
+After completing this tutorial, you can:
+- Try [GRPO with Unsloth](/fine-tuning/grpo-with-unsloth) for optimized training
+- Apply GRPO to code generation or structured output tasks
+- Experiment with different verification functions
+- Deploy your model using the [inference guides](https://docs.liquid.ai/docs/inference/overview)
+
+## Getting help
+
+Need assistance? Join the Liquid AI Discord Community:
+
+<a href="https://discord.com/invite/liquid-ai"><img src="https://img.shields.io/discord/1385439864920739850?color=7289da&label=Join%20Discord&logo=discord&logoColor=white" alt="Join Discord" /></a>

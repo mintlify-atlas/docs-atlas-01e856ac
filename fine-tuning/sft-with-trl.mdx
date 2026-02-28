@@ -1,0 +1,129 @@
+---
+title: Supervised fine-tuning with TRL
+description: Fine-tune LFM models using Hugging Face TRL library with LoRA support
+---
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Liquid4All/cookbook/blob/main/finetuning/notebooks/sft_with_trl.ipynb)
+
+This tutorial shows you how to perform supervised fine-tuning (SFT) using the Hugging Face TRL (Transformer Reinforcement Learning) library. We'll fine-tune the [LFM2.5-1.2B-Instruct](https://docs.liquid.ai/docs/models/lfm25-1.2b-instruct) model on the SmolTalk dataset.
+
+## What you'll learn
+
+By the end of this tutorial, you'll know how to:
+- Set up your environment with TRL and Hugging Face libraries
+- Load and prepare datasets for instruction fine-tuning
+- Use TRL's SFTTrainer for supervised fine-tuning
+- Configure LoRA for parameter-efficient fine-tuning on constrained hardware
+- Test your model with local inference
+- Save and export models for deployment
+
+## Prerequisites
+
+- **GPU**: This tutorial requires a GPU. You can run it for free on [Google Colab](https://colab.research.google.com/github/Liquid4All/cookbook/blob/main/finetuning/notebooks/sft_with_trl.ipynb) using an NVIDIA T4 GPU
+- **Python**: Python 3.8 or higher
+- **Basic knowledge**: Familiarity with Hugging Face Transformers library
+
+## Why use TRL?
+
+TRL (Transformer Reinforcement Learning) is a full-stack library from Hugging Face that provides:
+- **SFTTrainer**: Simplified supervised fine-tuning with best practices built-in
+- **Deep integration** with Hugging Face ecosystem (datasets, models, hub)
+- **LoRA support** through PEFT integration for memory-efficient training
+- **Flexible configuration** for various training scenarios
+- **Active development** and community support
+
+## Tutorial overview
+
+The tutorial covers the following steps:
+
+1. **Installation**: Install TRL, Transformers, and PEFT libraries
+2. **Model loading**: Load the LFM2.5-1.2B-Instruct model from Hugging Face Hub
+3. **Dataset preparation**: Format the SmolTalk dataset for instruction tuning
+4. **Training configuration**: Set up SFTTrainer with LoRA configuration
+5. **Training**: Fine-tune the model on your dataset
+6. **Inference**: Test the fine-tuned model
+7. **Model export**: Save your model for deployment
+
+## Key concepts
+
+### TRL's SFTTrainer
+
+SFTTrainer simplifies supervised fine-tuning by:
+- Automatically handling chat templates and formatting
+- Providing sensible default hyperparameters
+- Integrating with PEFT for LoRA training
+- Supporting mixed precision training out of the box
+- Including logging and checkpointing utilities
+
+### Standard vs parameter-efficient fine-tuning
+
+The tutorial demonstrates both approaches:
+
+**Standard fine-tuning**:
+- Updates all model parameters
+- Requires more GPU memory
+- Can achieve slightly better performance
+- Best for larger GPUs (24GB+)
+
+**LoRA fine-tuning**:
+- Only trains additional low-rank matrices
+- Reduces memory requirements by 3-4x
+- Enables fine-tuning on consumer GPUs
+- Maintains most of the performance
+- Best for GPUs with 8-16GB memory
+
+## Deployment options
+
+After fine-tuning, you can deploy your model to:
+
+- **Mobile**: Android and iOS apps using the LEAP SDK
+- **Desktop**: Mac (MLX), Windows/Linux (llama.cpp, Ollama, LM Studio)
+- **Cloud**: vLLM, Modal, Baseten, Fal for production deployments
+- **Edge**: On-device inference for low-latency applications
+
+See the [deployment documentation](https://docs.liquid.ai/docs/inference/overview) for detailed guides.
+
+## Run the tutorial
+
+You can run this tutorial in two ways:
+
+1. **Google Colab** (recommended for beginners): Click the "Open in Colab" badge at the top
+2. **Local environment**: Clone the [LFM Cookbook repository](https://github.com/Liquid4All/cookbook) and run the notebook locally
+
+### Access the notebook
+
+The complete notebook is available at:
+- **GitHub**: [sft_with_trl.ipynb](https://github.com/Liquid4All/cookbook/blob/main/finetuning/notebooks/sft_with_trl.ipynb)
+- **Colab**: Click the badge above to open directly in Google Colab
+
+## Comparison with Unsloth
+
+If you're deciding between TRL and Unsloth:
+
+**Choose TRL if you:**
+- Want standard Hugging Face ecosystem integration
+- Need maximum flexibility and customization
+- Prefer widely-adopted, well-documented tools
+- Plan to use other TRL features (PPO, DPO, etc.)
+
+**Choose Unsloth if you:**
+- Want 2x faster training speed
+- Need maximum memory efficiency
+- Prefer automatic optimizations
+- Want simplified export to multiple formats
+
+See the [SFT with Unsloth](/fine-tuning/sft-with-unsloth) tutorial for comparison.
+
+## Next steps
+
+After completing this tutorial, you can:
+- Try [SFT with Unsloth](/fine-tuning/sft-with-unsloth) for faster training
+- Explore [GRPO fine-tuning](/fine-tuning/grpo-with-unsloth) for reinforcement learning
+- Learn about [continued pre-training](/fine-tuning/cpt-translation) for language adaptation
+- Deploy your model using the [inference guides](https://docs.liquid.ai/docs/inference/overview)
+
+## Getting help
+
+Need assistance? Join the Liquid AI Discord Community:
+
+<a href="https://discord.com/invite/liquid-ai"><img src="https://img.shields.io/discord/1385439864920739850?color=7289da&label=Join%20Discord&logo=discord&logoColor=white" alt="Join Discord" /></a>

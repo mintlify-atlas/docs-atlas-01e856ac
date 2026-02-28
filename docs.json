@@ -1,122 +1,92 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "LFM Cookbook",
+  "theme": "palm",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#3B82F6",
+    "light": "#60A5FA",
+    "dark": "#1E40AF"
   },
-  "favicon": "/favicon.svg",
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/Liquid4All/cookbook"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/Liquid4All/cookbook",
+      "discord": "https://discord.com/invite/liquid-ai"
+    }
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Documentation",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Overview",
+            "pages": ["introduction", "getting-started"]
+          },
+          {
+            "group": "Local AI Apps",
             "pages": [
-              "index",
-              "quickstart",
-              "development"
+              "examples/invoice-parser",
+              "examples/audio-transcription-cli",
+              "examples/flight-search-assistant",
+              "examples/audio-car-cockpit",
+              "examples/audio-webgpu-demo",
+              "examples/vl-webgpu-demo",
+              "examples/localcowork",
+              "examples/local-coding-assistant",
+              "examples/meeting-intelligence-agent",
+              "examples/voice-chat",
+              "examples/browser-control",
+              "examples/car-maker-identification"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Mobile Deployment",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "mobile/overview",
+              "mobile/android",
+              "mobile/ios"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Fine-Tuning",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "fine-tuning/overview",
+              "fine-tuning/sft-with-unsloth",
+              "fine-tuning/sft-with-trl",
+              "fine-tuning/grpo-with-unsloth",
+              "fine-tuning/grpo-for-verifiable-tasks",
+              "fine-tuning/cpt-translation",
+              "fine-tuning/cpt-text-completion",
+              "fine-tuning/vlm-sft"
             ]
           },
           {
-            "group": "AI tools",
+            "group": "Community",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "community/projects",
+              "community/contributing"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "Resources",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Learning",
             "pages": [
-              "api-reference/introduction"
-            ]
-          },
-          {
-            "group": "Endpoint examples",
-            "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "resources/technical-deep-dives",
+              "resources/deployment-options"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
+    ]
   }
 }

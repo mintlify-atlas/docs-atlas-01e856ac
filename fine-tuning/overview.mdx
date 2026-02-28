@@ -1,0 +1,157 @@
+---
+title: Fine-tuning overview
+description: Learn how to fine-tune LFM models for your specific use cases
+---
+
+Fine-tuning allows you to adapt LFM models to your specific tasks and domains, improving performance on specialized use cases. This section covers different fine-tuning techniques and provides hands-on tutorials for each approach.
+
+## Fine-tuning techniques
+
+We provide tutorials for three main fine-tuning approaches:
+
+### Supervised fine-tuning (SFT)
+
+Supervised fine-tuning trains models on labeled instruction-response pairs. This is ideal for:
+- Teaching models new task-specific behaviors
+- Adapting models to follow specific instruction formats
+- Improving response quality on domain-specific questions
+
+### Group relative policy optimization (GRPO)
+
+GRPO is a reinforcement learning technique for tasks with verifiable outputs. Best suited for:
+- Mathematical problem solving with numeric verification
+- Code generation with unit test validation
+- Structured output tasks (JSON, SQL) with schema validation
+- Question answering with ground truth answers
+
+### Continued pre-training (CPT)
+
+Continued pre-training adapts models to new languages, domains, or writing styles. Use CPT for:
+- Language adaptation and translation tasks
+- Domain-specific knowledge injection
+- Creative text generation and novel writing
+- Adapting to specific narrative styles
+
+## Tutorials
+
+<CardGroup cols={2}>
+  <Card title="SFT with Unsloth" icon="rocket" href="/fine-tuning/sft-with-unsloth">
+    Fine-tune with memory-optimized training using Unsloth for 2x faster training
+  </Card>
+  <Card title="SFT with TRL" icon="huggingface" href="/fine-tuning/sft-with-trl">
+    Fine-tune using Hugging Face TRL library with LoRA support
+  </Card>
+  <Card title="GRPO with Unsloth" icon="brain" href="/fine-tuning/grpo-with-unsloth">
+    Reinforcement learning fine-tuning for mathematical reasoning tasks
+  </Card>
+  <Card title="GRPO for verifiable tasks" icon="check-circle" href="/fine-tuning/grpo-for-verifiable-tasks">
+    Apply GRPO to tasks with programmatic verification
+  </Card>
+  <Card title="CPT for translation" icon="language" href="/fine-tuning/cpt-translation">
+    Adapt models to new languages with continued pre-training
+  </Card>
+  <Card title="CPT for text completion" icon="pen" href="/fine-tuning/cpt-text-completion">
+    Train models for creative text generation and completion
+  </Card>
+  <Card title="Vision language model SFT" icon="eye" href="/fine-tuning/vlm-sft">
+    Fine-tune vision-language models for OCR and visual tasks
+  </Card>
+</CardGroup>
+
+## Prerequisites
+
+Before starting with fine-tuning, ensure you have:
+
+- **GPU access**: Fine-tuning requires a GPU. You can use:
+  - Local GPU (NVIDIA recommended)
+  - [Google Colab](https://colab.research.google.com/) with free T4 GPU
+  - Cloud GPU instances (AWS, GCP, Azure)
+
+- **Python environment**: Python 3.8 or higher
+
+- **Required libraries**: Each tutorial includes specific installation instructions, but common dependencies include:
+  - `transformers` - Hugging Face Transformers library
+  - `torch` - PyTorch deep learning framework
+  - `trl` or `unsloth` - Training libraries (depending on approach)
+  - `peft` - Parameter-efficient fine-tuning
+
+- **Hugging Face account**: For accessing models and datasets (optional but recommended)
+
+## Hardware requirements
+
+Minimum requirements vary by model size and technique:
+
+| Model | Method | Minimum GPU | Recommended GPU |
+|-------|--------|-------------|----------------|
+| LFM2.5-1.2B | SFT with LoRA | 8GB (T4) | 16GB (V100) |
+| LFM2.5-1.2B | GRPO | 16GB (T4) | 24GB (L4) |
+| LFM2-2.6B | SFT with LoRA | 16GB (T4) | 24GB (A10) |
+| LFM2.5-VL-1.6B | VLM SFT | 16GB (T4) | 24GB (L4) |
+
+## Deployment after fine-tuning
+
+LFM2.5 models are small and efficient, enabling deployment across a wide range of platforms:
+
+<table>
+  <tr>
+    <th>Deployment target</th>
+    <th>Use case</th>
+    <th>Documentation</th>
+  </tr>
+  <tr>
+    <td>Android</td>
+    <td>Mobile apps on Android devices</td>
+    <td><a href="https://docs.liquid.ai/leap/edge-sdk/android/android-quick-start-guide">Android guide</a></td>
+  </tr>
+  <tr>
+    <td>iOS</td>
+    <td>Mobile apps on iPhone/iPad</td>
+    <td><a href="https://docs.liquid.ai/leap/edge-sdk/ios/ios-quick-start-guide">iOS guide</a></td>
+  </tr>
+  <tr>
+    <td>Apple Silicon Mac</td>
+    <td>Local inference on Mac with MLX</td>
+    <td><a href="https://docs.liquid.ai/docs/inference/mlx">MLX guide</a></td>
+  </tr>
+  <tr>
+    <td>llama.cpp</td>
+    <td>Local deployments on any hardware</td>
+    <td><a href="https://docs.liquid.ai/docs/inference/llama-cpp">llama.cpp guide</a></td>
+  </tr>
+  <tr>
+    <td>Ollama</td>
+    <td>Local inference with easy setup</td>
+    <td><a href="https://docs.liquid.ai/docs/inference/ollama">Ollama guide</a></td>
+  </tr>
+  <tr>
+    <td>LM Studio</td>
+    <td>Desktop app for local inference</td>
+    <td><a href="https://docs.liquid.ai/docs/inference/lm-studio">LM Studio guide</a></td>
+  </tr>
+  <tr>
+    <td>vLLM</td>
+    <td>Cloud deployments with high throughput</td>
+    <td><a href="https://docs.liquid.ai/docs/inference/vllm">vLLM guide</a></td>
+  </tr>
+  <tr>
+    <td>Modal</td>
+    <td>Serverless cloud deployment</td>
+    <td><a href="https://docs.liquid.ai/docs/inference/modal-deployment">Modal guide</a></td>
+  </tr>
+  <tr>
+    <td>Baseten</td>
+    <td>Production ML infrastructure</td>
+    <td><a href="https://docs.liquid.ai/docs/inference/baseten-deployment">Baseten guide</a></td>
+  </tr>
+  <tr>
+    <td>Fal</td>
+    <td>Fast inference API</td>
+    <td><a href="https://docs.liquid.ai/docs/inference/fal-deployment">Fal guide</a></td>
+  </tr>
+</table>
+
+## Getting help
+
+Need help with fine-tuning? Join the Liquid AI Discord Community:
+
+<a href="https://discord.com/invite/liquid-ai"><img src="https://img.shields.io/discord/1385439864920739850?color=7289da&label=Join%20Discord&logo=discord&logoColor=white" alt="Join Discord" /></a>

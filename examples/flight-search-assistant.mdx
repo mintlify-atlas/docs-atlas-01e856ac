@@ -1,0 +1,86 @@
+---
+title: Flight search assistant
+description: Find and book plane tickets using LFM2.5-1.2B-Thinking with tool calling and reasoning
+---
+
+A minimal Python CLI that helps you find and book plane tickets using tool calling and reasoning to solve multi-step workflows.
+
+For example:
+
+```
+Book the cheapest flight from Barcelona to Belgrade on 2026-01-31
+```
+
+This project showcases the power of [LFM2.5-1.2B-Thinking](https://docs.liquid.ai/docs/models/lfm25-1.2b-thinking), a small Language Model that excels at tasks that require reasoning, logic and strong tool calling skills. The best part? The model can run on edge devices.
+
+<Frame>
+  <img src="https://raw.githubusercontent.com/Liquid4All/cookbook/main/examples/flight-search-assistant/media/demo.gif" alt="Flight search assistant demo" />
+</Frame>
+
+## Quick start
+
+<Steps>
+  <Step title="Install uv">
+    ```bash
+    uv --version
+    ```
+    
+    If the previous command fails, install `uv` following [these instructions](https://docs.astral.sh/uv/getting-started/installation/).
+  </Step>
+
+  <Step title="Build the project">
+    ```bash
+    uv sync
+    ```
+  </Step>
+
+  <Step title="Run the assistant">
+    Ask the flight search assistant to help you find and book plane tickets:
+
+    <CodeGroup>
+      ```bash Single tool call (search_flights)
+      uv run flight_search.py --query "What flights are available from New York to Paris on 2026-01-19?"
+      ```
+
+      ```bash Single tool call (book_flight)
+      uv run flight_search.py --query "Book flight AA495 for 2026-02-04"
+      ```
+
+      ```bash 2-step sequential tool call
+      uv run flight_search.py --query "Book the cheapest flight from Barcelona to Belgrade on 2026-01-31"
+      ```
+
+      ```bash N-step sequential tool call
+      uv run flight_search.py --query "Book the cheapest flight from Barcelona to a US city on the East Coast that is not NYC on 2026-02-14"
+      ```
+    </CodeGroup>
+  </Step>
+</Steps>
+
+## How does it work?
+
+The model has access to 2 tools:
+
+- `search_flights` - to retrieve contextual information
+- `book_flights` - to act on the outside world
+
+<Note>
+  The `search_flights` and `book_flight` functions are mocked using synthetic data for demonstration purposes. You can integrate with real flight data APIs (e.g., Amadeus, Skyscanner, or Kiwi) for production use.
+</Note>
+
+Given a user request, for example `Book the cheapest flight from Barcelona to Belgrade on 2026-01-31`, the model iteratively:
+
+1. Generates a response possibly with tool calls
+2. Executes any tool calls
+3. Regenerates response
+
+The model is served fully locally using llama.cpp.
+
+## Next steps
+
+- Add an evaluation dataset and loop
+- If necessary, boost model performance with GRPO fine-tuning with verifiable rewards
+
+## Source code
+
+View the complete source code on [GitHub](https://github.com/Liquid4All/cookbook/tree/main/examples/flight-search-assistant).

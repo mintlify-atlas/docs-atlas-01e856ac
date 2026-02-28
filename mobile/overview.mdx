@@ -1,0 +1,52 @@
+---
+title: Mobile deployment
+description: Run LFM models on iOS and Android devices with the LEAP Edge SDK
+---
+
+The LEAP Edge SDK enables you to deploy LFM2 models directly on mobile devices, bringing the power of on-device AI to your iOS and Android applications. Built for native development with Swift and Kotlin, the Edge SDK makes Small Language Model deployment as easy as calling a cloud LLM API endpoint.
+
+## Why run LFMs on mobile?
+
+Running language models directly on mobile devices offers several key advantages:
+
+- **Privacy**: Keep user data on-device without sending sensitive information to the cloud
+- **Offline capability**: Enable AI features that work without an internet connection
+- **Low latency**: Eliminate network round-trips for faster response times
+- **Cost efficiency**: Reduce or eliminate API costs for inference
+- **Always available**: Provide consistent AI experiences regardless of connectivity
+
+## Supported platforms
+
+The LEAP Edge SDK supports native development on both major mobile platforms:
+
+- **Android**: Native Kotlin integration with examples for chat, audio processing, vision models, and structured output
+- **iOS**: Native Swift/SwiftUI integration with examples for chat, text generation, audio, and structured data
+
+<CardGroup cols={2}>
+  <Card title="Android deployment" icon="android" href="/mobile/android">
+    Deploy LFM models on Android devices with native Kotlin integration
+  </Card>
+  <Card title="iOS deployment" icon="apple" href="/mobile/ios">
+    Deploy LFM models on iOS devices with native Swift integration
+  </Card>
+</CardGroup>
+
+## Common use cases
+
+The LEAP Edge SDK examples demonstrate a variety of real-world applications:
+
+- **Chat interfaces**: Build conversational AI apps with real-time streaming and persistent conversation history
+- **Audio processing**: Process speech input and generate audio output for voice-enabled features
+- **Vision models**: Integrate visual language models for image understanding and generation
+- **Structured output**: Generate formatted data like recipes, summaries, or structured responses
+- **Agent frameworks**: Build AI agents with tool calling and multi-step reasoning capabilities
+- **Content generation**: Create marketing copy, summaries, and other text content on-device
+
+## Getting started
+
+All mobile examples are available in the [LeapSDK-Examples repository](https://github.com/Liquid4All/LeapSDK-Examples) on GitHub. Choose your platform to get started:
+
+- [Android examples and setup guide](/mobile/android)
+- [iOS examples and setup guide](/mobile/ios)
+
+For detailed API documentation and integration guides, visit the [LEAP Edge SDK documentation](https://leap.liquid.ai/docs/edge-sdk/overview).

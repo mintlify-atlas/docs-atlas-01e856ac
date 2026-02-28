@@ -1,0 +1,196 @@
+---
+title: Getting started
+description: Set up your environment and run your first LFM application in minutes
+---
+
+# Getting started
+
+This guide will help you set up your development environment and run your first local AI application with Liquid Foundation Models (LFMs).
+
+## What you need
+
+Before you begin, ensure your system meets these requirements:
+
+### System requirements
+
+- **Operating System**: Linux, macOS, or Windows (WSL recommended)
+- **RAM**: Minimum 8GB (16GB or more recommended for larger models)
+- **Storage**: At least 5GB free space for models and dependencies
+- **Python**: Version 3.8 or higher
+
+<Note>
+  Model size determines memory requirements. Smaller models like LFM2-350M can run on 4GB RAM, while larger models like LFM2-24B require 32GB or more.
+</Note>
+
+### Common tools
+
+Depending on which examples you want to run, you may need:
+
+- **llama.cpp**: For efficient CPU and GPU inference
+- **uv**: Fast Python package installer and environment manager
+- **Git**: For cloning the repository
+- **Docker**: For containerized examples (optional)
+
+## Clone the repository
+
+<Steps>
+  <Step title="Clone the LFM Cookbook">
+    Open your terminal and clone the repository:
+
+    ```bash
+    git clone https://github.com/Liquid4All/lfm-cookbook.git
+    cd lfm-cookbook
+    ```
+  </Step>
+
+  <Step title="Explore the structure">
+    The repository is organized into main sections:
+
+    ```
+    lfm-cookbook/
+    ├── examples/          # Ready-to-run applications
+    ├── finetuning/        # Fine-tuning notebooks and scripts
+    └── README.md          # Main documentation
+    ```
+  </Step>
+</Steps>
+
+## Install common dependencies
+
+Many examples use **uv** for fast dependency management. Install it using:
+
+<CodeGroup>
+```bash macOS/Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+```bash Windows
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+</CodeGroup>
+
+For llama.cpp-based examples, you'll need to build or install llama.cpp. See the [llama.cpp documentation](https://github.com/ggerganov/llama.cpp) for platform-specific instructions.
+
+<Tip>
+  Each example includes its own `README.md` with specific setup instructions. Always check the example's README before starting.
+</Tip>
+
+## Run your first example
+
+Let's run the **Audio Transcription CLI** to see LFMs in action:
+
+<Steps>
+  <Step title="Navigate to the example">
+    ```bash
+    cd examples/audio-transcription-cli
+    ```
+  </Step>
+
+  <Step title="Install dependencies">
+    ```bash
+    uv pip install -r requirements.txt
+    ```
+  </Step>
+
+  <Step title="Download the model">
+    Follow the instructions in the example's README to download the LFM2-Audio-1.5B model in GGUF format.
+  </Step>
+
+  <Step title="Run the application">
+    ```bash
+    python main.py --model path/to/model.gguf
+    ```
+
+    Speak into your microphone and watch real-time transcription appear in your terminal!
+  </Step>
+</Steps>
+
+<Note>
+  Model download sizes vary from hundreds of MB to several GB. Ensure you have a stable internet connection and sufficient storage.
+</Note>
+
+## Explore more examples
+
+Now that you've run your first example, explore more use cases:
+
+<CardGroup cols={2}>
+  <Card title="Invoice parser" icon="file-invoice" href="/examples/invoice-parser">
+    Extract structured data from invoices using vision models
+  </Card>
+  <Card title="Flight search assistant" icon="plane" href="/examples/flight-search-assistant">
+    Build an AI agent with tool calling capabilities
+  </Card>
+  <Card title="WebGPU demos" icon="browser" href="/examples/audio-webgpu-demo">
+    Run models entirely in your browser without installation
+  </Card>
+  <Card title="Mobile apps" icon="mobile" href="/mobile/overview">
+    Deploy models on iOS and Android devices
+  </Card>
+</CardGroup>
+
+## Understanding model formats
+
+LFMs are available in different formats depending on your deployment target:
+
+- **GGUF**: Optimized format for llama.cpp, ideal for CPU/GPU inference
+- **ONNX**: Cross-platform format for mobile and web deployment
+- **Hugging Face**: Standard format for Python-based inference and fine-tuning
+
+You can find all models on [Hugging Face](https://huggingface.co/LiquidAI).
+
+## Common workflows
+
+### For local desktop applications
+
+1. Choose an example from the `examples/` directory
+2. Follow the example's README for setup
+3. Download the appropriate GGUF model
+4. Run the application with your local model
+
+### For mobile deployment
+
+1. Set up the [LEAP Edge SDK](https://leap.liquid.ai/docs/edge-sdk/overview)
+2. Choose an Android (Kotlin) or iOS (Swift) example
+3. Follow the platform-specific setup instructions
+4. Build and deploy to your device
+
+### For fine-tuning
+
+1. Navigate to `finetuning/notebooks/`
+2. Open a notebook in Google Colab
+3. Prepare your dataset in the required format
+4. Run the notebook to fine-tune your model
+5. Export and deploy your custom model
+
+## Next steps
+
+<Steps>
+  <Step title="Explore local AI apps">
+    Check out the [Local AI Apps](/examples/invoice-parser) section for production-ready examples with detailed documentation.
+  </Step>
+
+  <Step title="Learn about mobile deployment">
+    Dive into [Mobile Deployment](/mobile/overview) to build native iOS and Android applications.
+  </Step>
+
+  <Step title="Customize models">
+    Visit the [Fine-Tuning](/fine-tuning/overview) section to learn how to train models on your own data.
+  </Step>
+
+  <Step title="Join the community">
+    Connect with other developers on [Discord](https://discord.com/invite/liquid-ai) to share projects and get help.
+  </Step>
+</Steps>
+
+## Get help
+
+If you encounter issues:
+
+- Check the example's README for troubleshooting tips
+- Search existing issues on [GitHub](https://github.com/Liquid4All/lfm-cookbook/issues)
+- Ask questions in the `#help` channel on [Discord](https://discord.com/invite/liquid-ai)
+- Review the [Liquid AI Documentation](https://docs.liquid.ai/) for API references
+
+<Tip>
+  Join the `#live-events` channel on Discord to participate in technical deep dives and hands-on sessions with the Liquid AI team!
+</Tip>

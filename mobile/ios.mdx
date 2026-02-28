@@ -1,0 +1,107 @@
+---
+title: iOS deployment
+description: Deploy LFM models on iOS devices with the LEAP Edge SDK
+---
+
+The LEAP Edge SDK provides native Swift integration for deploying LFM2 models on iOS devices. Built with SwiftUI support, the SDK handles model loading, inference, and streaming responses, making it straightforward to add on-device AI capabilities to your iOS applications.
+
+## iOS examples
+
+The following examples demonstrate different use cases and capabilities of the LEAP SDK on iOS:
+
+<CardGroup cols={2}>
+  <Card title="LeapChat" icon="comments" href="https://github.com/Liquid4All/LeapSDK-Examples/tree/main/iOS/LeapChatExample">
+    Full-featured chat app with real-time streaming, conversation management, and native SwiftUI interface
+  </Card>
+  <Card title="LeapSloganExample" icon="text" href="https://github.com/Liquid4All/LeapSDK-Examples/tree/main/iOS/LeapSloganExample">
+    Basic LEAP SDK integration for text generation demonstrating core SwiftUI patterns
+  </Card>
+  <Card title="Recipe Generator" icon="utensils" href="https://github.com/Liquid4All/LeapSDK-Examples/tree/main/iOS/RecipeGenerator">
+    Structured output generation with JSON schema validation
+  </Card>
+  <Card title="Audio Demo" icon="microphone" href="https://github.com/Liquid4All/LeapSDK-Examples/tree/main/iOS/LeapAudioDemo">
+    Audio input and output processing with LEAP SDK for voice-enabled AI features
+  </Card>
+</CardGroup>
+
+## Example overview
+
+| Example | Description | Key Features |
+|---------|-------------|-------------|
+| **LeapChat** | Chat interface with streaming | Real-time streaming, conversation management, SwiftUI |
+| **LeapSloganExample** | Text generation | Basic SDK integration, SwiftUI patterns |
+| **RecipeGenerator** | Structured output | JSON schema, formatted responses |
+| **Audio Demo** | Audio processing | Speech input/output, on-device inference |
+
+## Getting started
+
+All iOS examples are available in the [LeapSDK-Examples repository](https://github.com/Liquid4All/LeapSDK-Examples). Each example includes:
+
+- Complete source code with Swift implementation
+- SwiftUI views and view models
+- Xcode project configuration
+- README with setup instructions
+- Sample prompts and usage examples
+
+### Installation
+
+1. Clone the LeapSDK-Examples repository:
+   ```bash
+   git clone https://github.com/Liquid4All/LeapSDK-Examples.git
+   cd LeapSDK-Examples/iOS
+   ```
+
+2. Open the example project in Xcode
+
+3. Follow the example-specific README for model setup and configuration
+
+### Basic integration
+
+The LEAP SDK makes it easy to integrate LFM models into your iOS app. Here's a basic SwiftUI example:
+
+```swift
+import LeapSDK
+import SwiftUI
+
+struct ContentView: View {
+    @StateObject private var sdk = LeapSDK.shared
+    @State private var response = ""
+    
+    var body: some View {
+        VStack {
+            Text(response)
+            Button("Generate") {
+                sdk.generateStream("Tell me a story") { token in
+                    response += token
+                }
+            }
+        }
+        .onAppear {
+            sdk.loadModel("lfm2-1.2b-instruct")
+        }
+    }
+}
+```
+
+## SwiftUI integration
+
+The LEAP SDK is designed to work seamlessly with SwiftUI's reactive patterns:
+
+- Use `@StateObject` or `@ObservedObject` for SDK instance management
+- Stream responses directly to `@State` properties for real-time UI updates
+- Leverage Swift's async/await for model loading and inference
+- Combine with SwiftUI navigation for multi-screen chat experiences
+
+## Resources
+
+- [LeapSDK-Examples Repository](https://github.com/Liquid4All/LeapSDK-Examples) - Complete source code for all examples
+- [LEAP Edge SDK Documentation](https://leap.liquid.ai/docs/edge-sdk/overview) - API reference and integration guides
+- [Liquid AI Documentation](https://docs.liquid.ai/) - Main documentation hub
+- [Discord Community](https://discord.com/invite/liquid-ai) - Get help and share your projects
+
+## Next steps
+
+- Explore the [LeapChat example](https://github.com/Liquid4All/LeapSDK-Examples/tree/main/iOS/LeapChatExample) for a complete SwiftUI chat implementation
+- Try the [Recipe Generator](https://github.com/Liquid4All/LeapSDK-Examples/tree/main/iOS/RecipeGenerator) to learn about structured output
+- Check out the [Audio Demo](https://github.com/Liquid4All/LeapSDK-Examples/tree/main/iOS/LeapAudioDemo) for audio processing capabilities
+- Review the [LEAP SDK documentation](https://leap.liquid.ai/docs/edge-sdk/overview) for detailed API information

@@ -1,0 +1,223 @@
+---
+title: Fine-tuning vision language models
+description: Fine-tune small vision language models for OCR and visual tasks with Unsloth
+---
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Liquid4All/cookbook/blob/main/finetuning/notebooks/sft_for_vision_language_model.ipynb)
+
+This tutorial shows you how to fine-tune a Small Vision Language Model to increase task-specific accuracy. We'll use [LFM2.5-VL-1.6B](https://docs.liquid.ai/docs/models/lfm25-vl-1.6b) and fine-tune it for Optical Character Recognition (OCR) of mathematical formulas.
+
+## What you'll learn
+
+By the end of this tutorial, you'll know how to:
+- Prepare vision-language datasets with images and text
+- Fine-tune multimodal models with Unsloth
+- Handle image preprocessing and tokenization
+- Test your model on vision tasks
+- Export vision models for deployment
+
+## Prerequisites
+
+- **GPU**: This tutorial requires a GPU with at least 16GB memory. You can run it for free on [Google Colab](https://colab.research.google.com/github/Liquid4All/cookbook/blob/main/finetuning/notebooks/sft_for_vision_language_model.ipynb) using an NVIDIA T4 GPU
+- **Python**: Python 3.8 or higher
+- **Basic knowledge**: Familiarity with vision tasks and multimodal models
+
+## What is a vision language model?
+
+Vision Language Models (VLMs) combine vision and language understanding:
+- Take images and text as input
+- Generate text descriptions or answers
+- Understand visual content in context
+- Perform tasks like OCR, VQA, image captioning
+
+## When to fine-tune VLMs
+
+Fine-tune vision language models when you need:
+
+### Specialized visual understanding
+- Medical image analysis
+- Mathematical formula recognition
+- Document understanding
+- Technical diagram interpretation
+
+### Domain-specific OCR
+- Handwriting recognition
+- Specialized fonts or notation
+- Low-quality or noisy images
+- Multi-language text extraction
+
+### Visual question answering
+- Product information extraction
+- Chart and graph interpretation
+- Scene understanding for specific domains
+
+### Image-based generation
+- Image captioning with specific style
+- Visual code generation
+- Diagram-to-text conversion
+
+## Tutorial overview
+
+The tutorial covers the following steps:
+
+1. **Installation**: Set up Unsloth and vision model dependencies
+2. **Model loading**: Load LFM2.5-VL-1.6B with vision capabilities
+3. **Data preparation**: Format image-text pairs for training
+4. **Image preprocessing**: Configure vision encoder settings
+5. **Training**: Fine-tune on OCR task
+6. **Inference**: Test on mathematical formula images
+7. **Export**: Save your model for deployment
+
+## Key concepts
+
+### Vision-language architecture
+
+LFM2.5-VL-1.6B consists of:
+- **Vision encoder**: Processes images into embeddings
+- **Projection layer**: Maps vision features to language space
+- **Language model**: Generates text based on vision+text input
+
+### Data format for VLMs
+
+Vision-language datasets need:
+```python
+{
+    "image": PIL.Image or path,
+    "query": "What is in this image?",
+    "response": "Expected text output"
+}
+```
+
+Images are automatically:
+- Resized to model's expected resolution
+- Normalized with proper mean/std
+- Converted to model's input format
+
+### The OCR task
+
+Mathematical formula OCR is challenging because:
+- Complex notation and symbols
+- Spatial relationships matter (superscripts, fractions)
+- Variable fonts and handwriting styles
+- Mix of text and mathematical operators
+
+Fine-tuning improves accuracy significantly for this specialized task.
+
+## Training configuration
+
+### LoRA for vision models
+
+The tutorial uses LoRA for efficient training:
+- Apply LoRA to both text and vision components
+- Reduce memory requirements
+- Maintain vision-language alignment
+- Enable training on consumer GPUs
+
+### Important considerations
+
+**Vision encoder freezing**:
+- Can freeze vision encoder and only train language model
+- Or train both for better adaptation
+- Depends on dataset size and domain shift
+
+**Batch size**:
+- Images require more memory than text
+- Reduce batch size compared to text-only training
+- Use gradient accumulation for effective larger batches
+
+**Context length**:
+- Vision tokens take up context window
+- Adjust max_seq_length accordingly
+- Balance between image detail and text length
+
+## Special requirements
+
+Note the different transformers version:
+```bash
+!pip install git+https://github.com/huggingface/transformers.git@3c251772...
+```
+
+This is required because:
+- Vision model support is in development
+- Specific commit has VLM fixes
+- Will be in stable release soon
+
+## Deployment options
+
+After fine-tuning, you can deploy your model to:
+
+- **Mobile**: Android and iOS apps using the LEAP SDK (vision support coming soon)
+- **Desktop**: Mac (MLX), Windows/Linux (custom inference)
+- **Cloud**: vLLM, Modal, Baseten, Fal for production deployments
+- **Edge**: On-device inference for vision applications
+
+See the [deployment documentation](https://docs.liquid.ai/docs/inference/overview) for detailed guides.
+
+## Run the tutorial
+
+You can run this tutorial in two ways:
+
+1. **Google Colab** (recommended): Click the "Open in Colab" badge at the top
+2. **Local environment**: Clone the [LFM Cookbook repository](https://github.com/Liquid4All/cookbook) and run the notebook locally
+
+### Access the notebook
+
+The complete notebook is available at:
+- **GitHub**: [sft_for_vision_language_model.ipynb](https://github.com/Liquid4All/cookbook/blob/main/finetuning/notebooks/sft_for_vision_language_model.ipynb)
+- **Colab**: Click the badge above to open directly in Google Colab
+
+## Adapting to your vision task
+
+To apply this tutorial to your own vision task:
+
+1. **Collect image-text pairs**: Gather (image, query, response) tuples
+2. **Format dataset**: Create dataset with image and text columns
+3. **Adjust preprocessing**: Modify image size if needed
+4. **Configure training**: Adjust batch size for your GPU
+5. **Evaluate thoroughly**: Test on diverse visual examples
+
+## Example use cases
+
+What you can build with fine-tuned VLMs:
+
+### Document understanding
+- Extract information from forms
+- Parse invoices and receipts
+- Analyze document layouts
+
+### Medical imaging
+- Generate radiology reports
+- Identify abnormalities
+- Extract measurements from scans
+
+### Technical diagrams
+- Convert flowcharts to code
+- Extract data from plots
+- Interpret circuit diagrams
+
+### Visual search
+- Generate searchable descriptions
+- Extract product attributes
+- Classify visual content
+
+## Expected results
+
+After fine-tuning on OCR tasks, expect:
+- **Improved accuracy** on target domain (typically 15-30% improvement)
+- **Better symbol recognition** for specialized notation
+- **More consistent outputs** following expected format
+- **Reduced hallucinations** on visual details
+
+## Next steps
+
+After completing this tutorial, you can:
+- Apply to other vision tasks (VQA, captioning, etc.)
+- Experiment with different vision model sizes
+- Try multi-task training on various vision tasks
+- Deploy your model using the [inference guides](https://docs.liquid.ai/docs/inference/overview)
+
+## Getting help
+
+Need assistance? Join the Liquid AI Discord Community:
+
+<a href="https://discord.com/invite/liquid-ai"><img src="https://img.shields.io/discord/1385439864920739850?color=7289da&label=Join%20Discord&logo=discord&logoColor=white" alt="Join Discord" /></a>

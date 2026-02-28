@@ -1,0 +1,159 @@
+---
+title: Invoice parser
+description: Extract payment details from invoice PDFs using LFM2.5-VL-1.6B running locally
+---
+
+A Python CLI that extracts payment details from invoice PDFs. This is a practical example of building local AI tools with no cloud costs, no network latency, and no data privacy loss.
+
+<Frame>
+  <img src="https://raw.githubusercontent.com/Liquid4All/cookbook/main/examples/invoice-parser/media/diagram.jpg" alt="Invoice parser architecture diagram" />
+</Frame>
+
+## What you'll learn
+
+In this example, you will learn how to:
+
+- Set up local AI inference using llama.cpp to run Liquid models entirely on your machine without requiring cloud services or API keys
+- Build a file monitoring system that automatically processes new files dropped into a directory
+- Extract structured output from images using LFM2.5-VL-1.6B, a small vision-language model
+
+## Prerequisites
+
+You will need:
+
+- [llama.cpp](https://github.com/ggerganov/llama.cpp) to serve the Language Models locally
+- [uv](https://docs.astral.sh/uv/) to manage Python dependencies and run the application efficiently
+
+<Tabs>
+  <Tab title="macOS">
+    <CodeGroup>
+      ```bash llama.cpp
+      brew install llama.cpp
+      ```
+
+      ```bash uv
+      curl -LsSf https://astral.sh/uv/install.sh | sh
+      ```
+    </CodeGroup>
+  </Tab>
+  <Tab title="Linux">
+    <CodeGroup>
+      ```bash llama.cpp (from source)
+      git clone https://github.com/ggerganov/llama.cpp.git
+      cd llama.cpp
+      cmake -B build
+      cmake --build build --config Release
+      # Add build/bin to your PATH
+      ```
+
+      ```bash uv
+      curl -LsSf https://astral.sh/uv/install.sh | sh
+      ```
+    </CodeGroup>
+  </Tab>
+  <Tab title="Windows">
+    See the [llama.cpp installation instructions](https://github.com/ggml-org/llama.cpp/blob/master/docs/install.md) and [uv installation guide](https://docs.astral.sh/uv/getting-started/installation/).
+  </Tab>
+</Tabs>
+
+Verify llama-server is available:
+
+```bash
+which llama-server
+```
+
+## How to run it
+
+<Steps>
+  <Step title="Clone the repository">
+    ```bash
+    git clone https://github.com/Liquid4All/cookbook.git
+    cd cookbook/examples/invoice-parser
+    ```
+  </Step>
+
+  <Step title="Choose a mode">
+    The tool supports two modes: **watch** (continuous monitoring) and **process** (one-shot).
+
+    The tool automatically starts and stops `llama-server` for you — no need to run it separately.
+  </Step>
+</Steps>
+
+### Watch mode
+
+Run it as a background service that continuously monitors a directory and automatically parses invoice images as they land in the folder:
+
+```bash
+uv run python src/invoice_parser/main.py watch \
+    --dir invoices/ \
+    --image-model LiquidAI/LFM2.5-VL-1.6B-GGUF:Q8_0 \
+    --output bills.csv \
+    --process-existing
+```
+
+### Process mode
+
+Process specific files or folders and exit:
+
+<CodeGroup>
+  ```bash Process a folder
+  uv run python src/invoice_parser/main.py process \
+      --image-model LiquidAI/LFM2.5-VL-1.6B-GGUF:Q8_0 \
+      invoices/
+  ```
+
+  ```bash Process specific files
+  uv run python src/invoice_parser/main.py process \
+      --image-model LiquidAI/LFM2.5-VL-1.6B-GGUF:Q8_0 \
+      invoices/water_australia.png invoices/british_gas.png
+  ```
+
+  ```bash Save to CSV
+  uv run python src/invoice_parser/main.py process \
+      --image-model LiquidAI/LFM2.5-VL-1.6B-GGUF:Q8_0 \
+      --output bills.csv \
+      invoices/
+  ```
+</CodeGroup>
+
+If you have `make` installed, you can run the application with:
+
+```bash
+make run       # watch mode
+make process   # one-shot process mode
+```
+
+## Results
+
+You can run the tool with a sample of images under `invoices/`:
+
+```bash
+uv run python src/invoice_parser/main.py process \
+    --image-model LiquidAI/LFM2.5-VL-1.6B-GGUF:Q8_0 \
+    invoices/
+```
+
+Or with make:
+
+```bash
+make process
+```
+
+The model correctly extracts all 4 out of 4 invoices:
+
+| File | Utility | Amount | Currency |
+|------|---------|--------|----------|
+| water_australia.png | water | 68.46 | AUD |
+| Sample-electric-Bill-2023.jpg | electricity | 28.32 | USD |
+| castlewater1.png | water | 436.55 | GBP |
+| british_gas.png | electricity | 81.31 | GBP |
+
+## Next steps
+
+The model works perfectly out-of-the-box on our sample of invoices. However, depending on your specific invoice formats and layouts, you may encounter cases where the extraction is not accurate enough.
+
+In those cases, you can fine-tune the model on your own dataset to improve accuracy. Check out the [fine-tuning notebook for Vision Language Models](/fine-tuning/vlm-sft) to learn how.
+
+## Source code
+
+View the complete source code on [GitHub](https://github.com/Liquid4All/cookbook/tree/main/examples/invoice-parser).

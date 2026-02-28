@@ -1,0 +1,271 @@
+---
+title: Deployment options
+description: Deploy LFM models across mobile devices, desktop environments, and cloud platforms
+---
+
+LFM models are designed to run efficiently across a wide range of environments, from mobile devices and laptops to cloud infrastructure. This guide provides an overview of where you can deploy LFM models and how to get started with each option.
+
+## Mobile deployment
+
+Deploy LFM models natively on iOS and Android using the [LEAP Edge SDK](https://leap.liquid.ai/docs/edge-sdk/overview).
+
+<CardGroup cols={2}>
+  <Card 
+    title="Android" 
+    icon="android" 
+    href="/mobile/android"
+    color="#3DDC84"
+  >
+    **Use case:** On-device chat apps, audio processing, vision models, and structured output generation
+    
+    The LEAP Edge SDK for Android (Kotlin) makes Small Language Model deployment as easy as calling a cloud LLM API endpoint. Perfect for building privacy-focused apps with real-time streaming and persistent conversation history.
+    
+    **Example apps:**
+    - LeapChat — Full-featured chat with streaming
+    - LeapAudioDemo — Audio input/output
+    - VLM Example — Vision-language model integration
+    - Recipe Generator — Structured output
+  </Card>
+  
+  <Card 
+    title="iOS" 
+    icon="apple" 
+    href="/mobile/ios"
+  >
+    **Use case:** SwiftUI chat applications, on-device inference, audio demos, and structured data generation
+    
+    The LEAP Edge SDK for iOS (Swift) provides native integration with SwiftUI for building modern, responsive apps. Run LFM models entirely on-device for maximum privacy and offline capability.
+    
+    **Example apps:**
+    - LeapChat — SwiftUI chat interface
+    - Audio Demo — On-device audio processing
+    - Recipe Generator — JSON structured output
+    - LeapSloganExample — Basic text generation
+  </Card>
+</CardGroup>
+
+<Tip>
+The LEAP Edge SDK is optimized for small language models, making deployment simple and efficient. Check out the [mobile deployment examples](/mobile/overview) for complete implementation guides.
+</Tip>
+
+## Desktop deployment
+
+Run LFM models locally on your computer using popular inference frameworks.
+
+<CardGroup cols={2}>
+  <Card 
+    title="Mac" 
+    icon="apple" 
+  >
+    **Use case:** Local development, testing, and privacy-focused applications
+    
+    Run LFM models natively on Mac using Metal acceleration for fast inference on Apple Silicon.
+    
+    **Tools:**
+    - llama.cpp with Metal support
+    - Ollama for easy model management
+    - LM Studio for GUI-based interaction
+  </Card>
+  
+  <Card 
+    title="llama.cpp" 
+    icon="terminal"
+    href="https://github.com/ggerganov/llama.cpp"
+  >
+    **Use case:** Command-line inference, custom integrations, maximum control
+    
+    The most flexible option for running LFM models locally. Supports CPU and GPU acceleration across platforms.
+    
+    **Features:**
+    - Cross-platform support (Windows, Mac, Linux)
+    - Quantization for reduced memory usage
+    - Server mode for API-like access
+  </Card>
+  
+  <Card 
+    title="Ollama" 
+    icon="cube"
+    href="https://ollama.ai"
+  >
+    **Use case:** Quick local deployment, model management, REST API access
+    
+    Simplifies running LFM models locally with automatic model downloading and management.
+    
+    **Benefits:**
+    - One-command model installation
+    - Built-in REST API
+    - Easy switching between models
+  </Card>
+  
+  <Card 
+    title="LM Studio" 
+    icon="desktop"
+    href="https://lmstudio.ai"
+  >
+    **Use case:** GUI-based model testing, local development, non-technical users
+    
+    User-friendly desktop application for running LFM models without command-line tools.
+    
+    **Features:**
+    - Visual model browser
+    - Interactive chat interface
+    - Model performance monitoring
+  </Card>
+</CardGroup>
+
+## Cloud deployment
+
+Deploy LFM models on cloud infrastructure for scalable, production workloads.
+
+<CardGroup cols={2}>
+  <Card 
+    title="vLLM" 
+    icon="server"
+    href="https://docs.vllm.ai"
+  >
+    **Use case:** High-throughput production serving, batch processing
+    
+    Production-grade inference server optimized for serving LLMs at scale with continuous batching and efficient memory management.
+    
+    **Key features:**
+    - PagedAttention for memory efficiency
+    - Continuous batching for high throughput
+    - OpenAI-compatible API
+  </Card>
+  
+  <Card 
+    title="Modal" 
+    icon="cloud"
+    href="https://modal.com"
+  >
+    **Use case:** Serverless deployment, auto-scaling workloads, development to production
+    
+    Deploy LFM models as serverless functions that scale automatically based on demand.
+    
+    **Benefits:**
+    - Zero infrastructure management
+    - Pay per execution
+    - GPU access on demand
+  </Card>
+  
+  <Card 
+    title="Baseten" 
+    icon="rocket"
+    href="https://baseten.co"
+  >
+    **Use case:** Production ML deployment, model monitoring, team collaboration
+    
+    ML infrastructure platform for deploying and scaling LFM models with built-in observability.
+    
+    **Features:**
+    - One-click deployment
+    - Built-in monitoring
+    - Version management
+  </Card>
+  
+  <Card 
+    title="Fal" 
+    icon="bolt"
+    href="https://fal.ai"
+  >
+    **Use case:** Fast inference, real-time applications, edge cloud deployment
+    
+    Platform optimized for fast model serving with global edge infrastructure.
+    
+    **Advantages:**
+    - Low latency worldwide
+    - Simple API integration
+    - Automatic scaling
+  </Card>
+</CardGroup>
+
+## Choosing a deployment option
+
+Select the right deployment approach based on your requirements:
+
+<AccordionGroup>
+  <Accordion title="Privacy and offline capability">
+    **Best options:** Mobile (iOS/Android), Desktop (llama.cpp, Ollama)
+    
+    Deploy models directly on user devices for:
+    - Complete data privacy (no data leaves the device)
+    - Offline functionality
+    - Zero latency from network calls
+    - No API costs
+  </Accordion>
+  
+  <Accordion title="Scalability and high throughput">
+    **Best options:** Cloud (vLLM, Baseten, Modal)
+    
+    Use cloud deployment when you need:
+    - Auto-scaling based on demand
+    - High concurrent request handling
+    - Centralized model updates
+    - Team collaboration features
+  </Accordion>
+  
+  <Accordion title="Development and testing">
+    **Best options:** Desktop (LM Studio, Ollama), Cloud (Modal)
+    
+    For rapid prototyping:
+    - Quick model switching and testing
+    - GUI tools for experimentation
+    - Local development before production
+    - Easy debugging and monitoring
+  </Accordion>
+  
+  <Accordion title="Cost optimization">
+    **Best options:** Mobile, Desktop, Serverless (Modal, Fal)
+    
+    Minimize costs by:
+    - Running on user devices (zero server costs)
+    - Pay-per-use serverless options
+    - Efficient inference engines (vLLM)
+    - Smaller models (LFM2 350M-3B)
+  </Accordion>
+</AccordionGroup>
+
+## Getting started
+
+Ready to deploy? Here are your next steps:
+
+<Steps>
+  <Step title="Choose your platform">
+    Select a deployment option based on your use case and requirements
+  </Step>
+  
+  <Step title="Follow the quickstart">
+    Use our platform-specific guides:
+    - [Android quickstart](/mobile/android/quickstart)
+    - [iOS quickstart](/mobile/ios/quickstart)
+    - [Cloud deployment guides](/deployment/overview)
+  </Step>
+  
+  <Step title="Explore examples">
+    Check out working examples in the [cookbook repository](https://github.com/Liquid4All/LFM-Cookbook)
+  </Step>
+  
+  <Step title="Join the community">
+    Get help and share your deployment on [Discord](https://discord.com/invite/liquid-ai)
+  </Step>
+</Steps>
+
+## Additional resources
+
+<CardGroup cols={2}>
+  <Card title="Community projects" icon="users" href="/community/projects">
+    See how others have deployed LFM models in production
+  </Card>
+  
+  <Card title="Technical deep dives" icon="video" href="/resources/technical-deep-dives">
+    Watch detailed deployment tutorials and best practices
+  </Card>
+  
+  <Card title="LEAP SDK docs" icon="book" href="https://leap.liquid.ai">
+    Complete documentation for the LEAP Edge SDK
+  </Card>
+  
+  <Card title="Model hub" icon="download" href="https://huggingface.co/LiquidAI">
+    Download LFM models from Hugging Face
+  </Card>
+</CardGroup>
